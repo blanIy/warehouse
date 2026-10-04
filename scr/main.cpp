@@ -4,7 +4,7 @@
 #include <clocale>
 
 #ifdef _WIN32
-#include <windows.h>
+#include <Windows.h>
 #endif
 
 int main() {
