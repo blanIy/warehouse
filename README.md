@@ -18,4 +18,4 @@
 * **Управление составом:** товар, склад. <br>
 ---
 
-ссылка на Sonarcloud: https://sonarcloud.io/summary/overall?id=blanIy_cinema&branch=master
+ссылка на Sonarcloud: https://sonarcloud.io/summary/overall?id=blanIy_warehouse&branch=master
