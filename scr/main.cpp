@@ -26,12 +26,10 @@ int main() {
     catalog.emplace_back("SKU-004", "Паллет_кирпича", "Стройматериалы", 1200.0, 1.5);
     catalog.emplace_back("SKU-005", "Набор_датчиков", "Электроника", 5.0, 0.1);
 
-    auto* zoneA = warehouse.getZone(0);
-    if (zoneA != nullptr) {
+    if (auto* zoneA = warehouse.getZone(0); zoneA != nullptr) {
         *zoneA += catalog[0];
     }
-    auto* zoneB = warehouse.getZone(1);
-    if (zoneB != nullptr) {
+    if (auto* zoneB = warehouse.getZone(1); zoneB != nullptr) {
         *zoneB += catalog[2];
     }
 

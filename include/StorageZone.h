@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 #include <string_view>
-#include <iosfwd>
+#include <iostream>
 
 class StorageZone {
 private:
@@ -34,5 +34,20 @@ public:
     StorageZone& operator+=(const Product& product);
     StorageZone& operator-=(std::string_view sku);
 
-    friend std::ostream& operator<<(std::ostream& os, const StorageZone& zone);
+    friend std::ostream& operator<<(std::ostream& os, const StorageZone& zone) {
+        os << "--- " << zone.name << " ---\n"
+            << "Загрузка по массе: " << zone.currentWeight << " / " << zone.maxWeight << " кг\n"
+            << "Загрузка по объему: " << zone.currentVolume << " / " << zone.maxVolume << " м3\n"
+            << "Товаров в зоне: " << zone.products.size() << "\n";
+        if (zone.products.empty()) {
+            os << "  (Зона свободна)\n";
+        }
+        else {
+            for (const auto& product : zone.products) {
+                os << "  * " << product << "\n";
+            }
+        }
+        os << "----------------------------------------\n";
+        return os;
+    }
 };
