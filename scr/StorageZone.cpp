@@ -53,19 +53,39 @@ bool StorageZone::removeProduct(std::string_view sku) {
     return false;
 }
 
-void StorageZone::printStatus() const {
-    std::cout << "--- " << name << " ---\n"
-        << "Загрузка по массе: " << currentWeight << " / " << maxWeight << " кг\n"
-        << "Загрузка по объему: " << currentVolume << " / " << maxVolume << " м3\n"
-        << "Товаров в зоне: " << products.size() << "\n";
-    if (products.empty()) {
-        std::cout << "  (Зона пуста)\n";
+StorageZone& StorageZone::operator+=(const Product& product) {
+    if (!addProduct(product)) {
+        std::cout << "\n[ОТКАЗ В РАЗМЕЩЕНИИ] Превышена грузоподъемность или полезный объем зоны \"" << name << "\"!\n";
     }
     else {
-        for (const auto& product : products) {
-            std::cout << "  * ";
-            product.printInfo();
+        std::cout << "\n[УСПЕШНО] Товар принят на ответственное хранение в \"" << name << "\".\n";
+    }
+    return *this;
+}
+
+StorageZone& StorageZone::operator-=(std::string_view sku) {
+    if (!removeProduct(sku)) {
+        std::cout << "\n[ОШИБКА ОТГРУЗКИ] Товар с артикулом " << sku << " не числится в зоне \"" << name << "\"!\n";
+    }
+    else {
+        std::cout << "\n[УСПЕШНО] Товар с артикулом " << sku << " успешно списан и выдан со склада.\n";
+    }
+    return *this;
+}
+
+std::ostream& operator<<(std::ostream& os, const StorageZone& zone) {
+    os << "--- " << zone.name << " ---\n"
+        << "Загрузка по массе: " << zone.currentWeight << " / " << zone.maxWeight << " кг\n"
+        << "Загрузка по объему: " << zone.currentVolume << " / " << zone.maxVolume << " м3\n"
+        << "Товаров в зоне: " << zone.products.size() << "\n";
+    if (zone.products.empty()) {
+        os << "  (Зона свободна)\n";
+    }
+    else {
+        for (const auto& product : zone.products) {
+            os << "  * " << product << "\n";
         }
     }
-    std::cout << "----------------------------------------\n";
+    os << "----------------------------------------\n";
+    return os;
 }

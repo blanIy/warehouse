@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <string_view>
+#include <iosfwd>
 
 class Product {
 private:
@@ -11,6 +12,7 @@ private:
     double volume = 0.0;
 
 public:
+    Product() = default;
     Product(std::string_view sku, std::string_view name, std::string_view category, double weight, double volume);
 
     std::string getSku() const;
@@ -22,5 +24,12 @@ public:
     void setCategory(std::string_view newCategory);
     void setWeight(double newWeight);
 
-    void printInfo() const;
+    bool operator==(const Product& other) const;
+    bool operator!=(const Product& other) const;
+    bool operator<(const Product& other) const;
+    bool operator>(const Product& other) const;
+
+    friend std::ostream& operator<<(std::ostream& os, const Product& product);
+    friend std::istream& operator>>(std::istream& is, Product& product);
+    friend double calculateDensity(const Product& product);
 };

@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <string_view>
+#include <iosfwd>
 
 class StorageZone {
 private:
@@ -30,5 +31,8 @@ public:
     bool addProduct(const Product& product);
     bool removeProduct(std::string_view sku);
 
-    void printStatus() const;
+    StorageZone& operator+=(const Product& product);
+    StorageZone& operator-=(std::string_view sku);
+
+    friend std::ostream& operator<<(std::ostream& os, const StorageZone& zone);
 };

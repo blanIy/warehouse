@@ -52,6 +52,6 @@ void Warehouse::showInventory() const {
         return;
     }
     for (const auto& zone : zones) {
-        zone.printStatus();
+        std::cout << zone;
     }
 }
