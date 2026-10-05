@@ -1,6 +1,6 @@
 #include "WarehouseUI.h"
 #include <iostream>
-#include <algorithm>
+#include <utility>
 
 void printMenu() {
     std::cout << "\n========================================\n"
@@ -11,7 +11,7 @@ void printMenu() {
         << "3. Отгрузка товара со склада (по артикулу)\n"
         << "4. Корректировка номенклатурной категории\n"
         << "5. Регистрация нового товара в каталоге\n"
-        << "6. Логистический анализ и ранжирование всех грузов\n"
+        << "6. Логистический анализ и явное сравнение грузов\n"
         << "0. Завершить смену\n"
         << "========================================\n"
         << "Выберите действие: ";
@@ -109,40 +109,90 @@ void handleRegisterProduct(std::vector<Product>& catalog) {
 }
 
 void handleLogisticsAnalysis(const std::vector<Product>& catalog) {
-    if (catalog.empty()) {
-        std::cout << "\nКаталог товаров пуст!\n";
+    const auto catalogSize = static_cast<int>(catalog.size());
+    if (catalogSize < 2) {
+        std::cout << "\nВ каталоге недостаточно позиций для анализа!\n";
         return;
     }
 
     std::cout << "\n======================================================\n"
-        << "       ЛОГИСТИЧЕСКИЙ АНАЛИЗ И СРАВНЕНИЕ ВСЕХ ГРУЗОВ   \n"
+        << "          ЯВНОЕ СРАВНЕНИЕ ДВУХ ВЫБРАННЫХ ГРУЗОВ       \n"
         << "======================================================\n";
 
-    auto sortedItems = catalog;
-    std::sort(sortedItems.rbegin(), sortedItems.rend());
-
-    std::cout << "Ранжирование всех грузов по массе (от тяжелых к легким):\n\n";
-    const auto total = static_cast<int>(sortedItems.size());
-    for (auto i = 0; i < total; ++i) {
-        const auto& p = sortedItems[static_cast<size_t>(i)];
-        std::cout << (i + 1) << ". " << p << "\n"
-            << "   - Плотность: " << calculateDensity(p) << " кг/м3\n";
-
-        if (i == 0) {
-            std::cout << "   - Рекомендация: Нижний ярус (Самый тяжелый груз)\n";
-        }
-        else if (i == total - 1) {
-            std::cout << "   - Рекомендация: Верхний ярус стеллажа (Самый легкий)\n";
-        }
-        else {
-            std::cout << "   - Рекомендация: Средний ярус стеллажа\n";
-        }
-        std::cout << "\n";
+    for (auto i = 0; i < catalogSize; ++i) {
+        std::cout << (i + 1) << ". " << catalog[static_cast<size_t>(i)] << "\n";
     }
 
-    std::cout << "------------------------------------------------------\n"
-        << "Сводные данные экспертизы:\n"
-        << "Самый тяжелый груз: " << sortedItems.front().getName() << " (" << sortedItems.front().getWeight() << " кг)\n"
-        << "Самый легкий груз:  " << sortedItems.back().getName() << " (" << sortedItems.back().getWeight() << " кг)\n"
+    std::cout << "\nВыберите первый груз (1-" << catalogSize << "): ";
+    int c1 = 0;
+    std::cin >> c1;
+    std::cout << "Выберите второй груз (1-" << catalogSize << "): ";
+    int c2 = 0;
+    std::cin >> c2;
+
+    if (c1 < 1 || c1 > catalogSize || c2 < 1 || c2 > catalogSize) {
+        std::cout << "Ошибка ввода номеров позиций!\n";
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        return;
+    }
+
+    const auto& p1 = catalog[static_cast<size_t>(c1 - 1)];
+    const auto& p2 = catalog[static_cast<size_t>(c2 - 1)];
+
+    std::cout << "\n1. Явная проверка равенства (operator==):\n";
+    if (p1 == p2) {
+        std::cout << "   -> Артикулы совпадают (партии идентичны).\n";
+    }
+    else {
+        std::cout << "   -> Артикулы различаются (разные номенклатурные позиции).\n";
+    }
+
+    std::cout << "2. Явная проверка отношения (operator< и operator>):\n";
+    if (p1 < p2) {
+        std::cout << "   -> Груз \"" << p1.getName() << "\" ЛЕГЧЕ, чем \"" << p2.getName() << "\".\n";
+    }
+    else if (p1 > p2) {
+        std::cout << "   -> Груз \"" << p1.getName() << "\" ТЯЖЕЛЕЕ, чем \"" << p2.getName() << "\".\n";
+    }
+    else {
+        std::cout << "   -> Грузы имеют одинаковую массу.\n";
+    }
+
+    std::cout << "3. Расчет плотности (дружественная функция calculateDensity):\n";
+    std::cout << "   -> Плотность первого груза: " << calculateDensity(p1) << " кг/м3\n";
+    std::cout << "   -> Плотность второго груза: " << calculateDensity(p2) << " кг/м3\n";
+
+    std::cout << "\n======================================================\n"
+        << "       ЯВНОЕ СРАВНЕНИЕ И РАНЖИРОВАНИЕ ВСЕХ ГРУЗОВ     \n"
+        << "======================================================\n";
+
+    auto items = catalog;
+    for (size_t i = 0; i < items.size(); ++i) {
+        for (size_t j = i + 1; j < items.size(); ++j) {
+            if (items[i] < items[j]) {
+                std::swap(items[i], items[j]);
+            }
+        }
+    }
+
+    for (size_t i = 0; i < items.size(); ++i) {
+        std::cout << (i + 1) << ". " << items[i] << " | Плотность: " << calculateDensity(items[i]) << " кг/м3\n";
+    }
+
+    Product heaviest = items[0];
+    Product lightest = items[0];
+    for (const auto& item : items) {
+        if (item > heaviest) {
+            heaviest = item;
+        }
+        if (item < lightest) {
+            lightest = item;
+        }
+    }
+
+    std::cout << "\nИтоги явного анализа:\n"
+        << "Самый тяжелый груз (определен через operator>): " << heaviest.getName() << " (" << heaviest.getWeight() << " кг)\n"
+        << "Самый легкий груз  (определен через operator<): " << lightest.getName() << " (" << lightest.getWeight() << " кг)\n"
         << "======================================================\n";
 }
