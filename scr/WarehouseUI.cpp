@@ -108,38 +108,7 @@ void handleRegisterProduct(std::vector<Product>& catalog) {
     std::cout << "\n[УСПЕХ] Товар зарегистрирован в реестре:\n" << newProduct << "\n";
 }
 
-void handleLogisticsAnalysis(const std::vector<Product>& catalog) {
-    const auto catalogSize = static_cast<int>(catalog.size());
-    if (catalogSize < 2) {
-        std::cout << "\nВ каталоге недостаточно позиций для анализа!\n";
-        return;
-    }
-
-    std::cout << "\n======================================================\n"
-        << "          ЯВНОЕ СРАВНЕНИЕ ДВУХ ВЫБРАННЫХ ГРУЗОВ       \n"
-        << "======================================================\n";
-
-    for (auto i = 0; i < catalogSize; ++i) {
-        std::cout << (i + 1) << ". " << catalog[static_cast<size_t>(i)] << "\n";
-    }
-
-    std::cout << "\nВыберите первый груз (1-" << catalogSize << "): ";
-    int c1 = 0;
-    std::cin >> c1;
-    std::cout << "Выберите второй груз (1-" << catalogSize << "): ";
-    int c2 = 0;
-    std::cin >> c2;
-
-    if (c1 < 1 || c1 > catalogSize || c2 < 1 || c2 > catalogSize) {
-        std::cout << "Ошибка ввода номеров позиций!\n";
-        std::cin.clear();
-        std::cin.ignore(10000, '\n');
-        return;
-    }
-
-    const auto& p1 = catalog[static_cast<size_t>(c1 - 1)];
-    const auto& p2 = catalog[static_cast<size_t>(c2 - 1)];
-
+void compareTwoProducts(const Product& p1, const Product& p2) {
     std::cout << "\n1. Явная проверка равенства (operator==):\n";
     if (p1 == p2) {
         std::cout << "   -> Артикулы совпадают (партии идентичны).\n";
@@ -162,7 +131,9 @@ void handleLogisticsAnalysis(const std::vector<Product>& catalog) {
     std::cout << "3. Расчет плотности (дружественная функция calculateDensity):\n";
     std::cout << "   -> Плотность первого груза: " << calculateDensity(p1) << " кг/м3\n";
     std::cout << "   -> Плотность второго груза: " << calculateDensity(p2) << " кг/м3\n";
+}
 
+void rankAndAnalyzeAll(const std::vector<Product>& catalog) {
     std::cout << "\n======================================================\n"
         << "       ЯВНОЕ СРАВНЕНИЕ И РАНЖИРОВАНИЕ ВСЕХ ГРУЗОВ     \n"
         << "======================================================\n";
@@ -195,4 +166,37 @@ void handleLogisticsAnalysis(const std::vector<Product>& catalog) {
         << "Самый тяжелый груз (определен через operator>): " << heaviest.getName() << " (" << heaviest.getWeight() << " кг)\n"
         << "Самый легкий груз  (определен через operator<): " << lightest.getName() << " (" << lightest.getWeight() << " кг)\n"
         << "======================================================\n";
+}
+
+void handleLogisticsAnalysis(const std::vector<Product>& catalog) {
+    const auto catalogSize = static_cast<int>(catalog.size());
+    if (catalogSize < 2) {
+        std::cout << "\nВ каталоге недостаточно позиций для анализа!\n";
+        return;
+    }
+
+    std::cout << "\n======================================================\n"
+        << "          ЯВНОЕ СРАВНЕНИЕ ДВУХ ВЫБРАННЫХ ГРУЗОВ       \n"
+        << "======================================================\n";
+
+    for (auto i = 0; i < catalogSize; ++i) {
+        std::cout << (i + 1) << ". " << catalog[static_cast<size_t>(i)] << "\n";
+    }
+
+    std::cout << "\nВыберите первый груз (1-" << catalogSize << "): ";
+    int c1 = 0;
+    std::cin >> c1;
+    std::cout << "Выберите второй груз (1-" << catalogSize << "): ";
+    int c2 = 0;
+    std::cin >> c2;
+
+    if (c1 < 1 || c1 > catalogSize || c2 < 1 || c2 > catalogSize) {
+        std::cout << "Ошибка ввода номеров позиций!\n";
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
+        return;
+    }
+
+    compareTwoProducts(catalog[static_cast<size_t>(c1 - 1)], catalog[static_cast<size_t>(c2 - 1)]);
+    rankAndAnalyzeAll(catalog);
 }
