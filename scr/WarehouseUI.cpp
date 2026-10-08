@@ -163,8 +163,8 @@ void rankAndAnalyzeAll(const std::vector<Product>& catalog) {
     }
 
     std::cout << "\nИтоги явного анализа:\n"
-        << "Самый тяжелый груз (определен через operator>): " << heaviest.getName() << " (" << heaviest.getWeight() << " кг)\n"
-        << "Самый легкий груз  (определен через operator<): " << lightest.getName() << " (" << lightest.getWeight() << " кг)\n"
+        << "Самый тяжелый груз: " << heaviest.getName() << " (" << heaviest.getWeight() << " кг)\n"
+        << "Самый легкий груз: " << lightest.getName() << " (" << lightest.getWeight() << " кг)\n"
         << "======================================================\n";
 }
 
