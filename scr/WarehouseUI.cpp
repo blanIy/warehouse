@@ -109,7 +109,7 @@ void handleRegisterProduct(std::vector<Product>& catalog) {
 }
 
 void compareTwoProducts(const Product& p1, const Product& p2) {
-    std::cout << "\n1. Явная проверка равенства (operator==):\n";
+    std::cout << "\n1.  Проверка равенства:\n";
     if (p1 == p2) {
         std::cout << "   -> Артикулы совпадают (партии идентичны).\n";
     }
@@ -117,7 +117,7 @@ void compareTwoProducts(const Product& p1, const Product& p2) {
         std::cout << "   -> Артикулы различаются (разные номенклатурные позиции).\n";
     }
 
-    std::cout << "2. Явная проверка отношения (operator< и operator>):\n";
+    std::cout << "2. Проверка отношения:\n";
     if (p1 < p2) {
         std::cout << "   -> Груз \"" << p1.getName() << "\" ЛЕГЧЕ, чем \"" << p2.getName() << "\".\n";
     }
@@ -128,7 +128,7 @@ void compareTwoProducts(const Product& p1, const Product& p2) {
         std::cout << "   -> Грузы имеют одинаковую массу.\n";
     }
 
-    std::cout << "3. Расчет плотности (дружественная функция calculateDensity):\n";
+    std::cout << "3. Расчет плотности:\n";
     std::cout << "   -> Плотность первого груза: " << calculateDensity(p1) << " кг/м3\n";
     std::cout << "   -> Плотность второго груза: " << calculateDensity(p2) << " кг/м3\n";
 }
