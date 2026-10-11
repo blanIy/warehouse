@@ -27,6 +27,15 @@
     <ClInclude Include="include\WarehouseUI.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="PerishableProduct.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="FragileProduct.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="ChemicalProduct.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\main.cpp">
@@ -42,6 +51,15 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="scr\WarehouseUI.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="PerishableProduct.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="FragileProduct.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="ChemicalProduct.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

@@ -10,6 +10,14 @@ std::string Product::getCategory() const { return category; }
 double Product::getWeight() const { return weight; }
 double Product::getVolume() const { return volume; }
 
+void Product::setSku(std::string_view newSku) {
+    sku = newSku;
+}
+
+void Product::setName(std::string_view newName) {
+    name = newName;
+}
+
 void Product::setCategory(std::string_view newCategory) {
     category = newCategory;
 }
@@ -17,6 +25,12 @@ void Product::setCategory(std::string_view newCategory) {
 void Product::setWeight(double newWeight) {
     if (newWeight > 0.0) {
         weight = newWeight;
+    }
+}
+
+void Product::setVolume(double newVolume) {
+    if (newVolume > 0.0) {
+        volume = newVolume;
     }
 }
 

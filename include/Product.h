@@ -5,7 +5,7 @@
 #include <compare>
 
 class Product {
-private:
+protected:
     std::string sku;
     std::string name;
     std::string category;
@@ -15,6 +15,7 @@ private:
 public:
     Product() = default;
     Product(std::string_view sku, std::string_view name, std::string_view category, double weight, double volume);
+    virtual ~Product() = default;
 
     std::string getSku() const;
     std::string getName() const;
@@ -22,8 +23,11 @@ public:
     double getWeight() const;
     double getVolume() const;
 
+    void setSku(std::string_view newSku);
+    void setName(std::string_view newName);
     void setCategory(std::string_view newCategory);
     void setWeight(double newWeight);
+    void setVolume(double newVolume);
 
     bool operator==(const Product& other) const;
     auto operator<=>(const Product& other) const {
@@ -39,9 +43,9 @@ public:
     friend std::istream& operator>>(std::istream& is, Product& product) {
         std::cout << "¬ведите артикул: ";
         is >> product.sku;
-        std::cout << "¬ведите название (одним словом): ";
+        std::cout << "¬ведите название: ";
         is >> product.name;
-        std::cout << "¬ведите категорию (одним словом): ";
+        std::cout << "¬ведите категорию: ";
         is >> product.category;
         std::cout << "¬ведите массу (кг): ";
         is >> product.weight;
