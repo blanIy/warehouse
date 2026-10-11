@@ -19,19 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ChemicalProduct.h" />
-    <ClInclude Include="FragileProduct.h" />
+    <ClInclude Include="include\ChemicalProduct.h" />
+    <ClInclude Include="include\FragileProduct.h" />
+    <ClInclude Include="include\PerishableProduct.h" />
     <ClInclude Include="include\Product.h" />
     <ClInclude Include="include\StorageZone.h" />
     <ClInclude Include="include\Warehouse.h" />
     <ClInclude Include="include\WarehouseUI.h" />
-    <ClInclude Include="PerishableProduct.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ChemicalProduct.cpp" />
-    <ClCompile Include="FragileProduct.cpp" />
-    <ClCompile Include="PerishableProduct.cpp" />
+    <ClCompile Include="scr\ChemicalProduct.cpp" />
+    <ClCompile Include="scr\FragileProduct.cpp" />
     <ClCompile Include="scr\main.cpp" />
+    <ClCompile Include="scr\PerishableProduct.cpp" />
     <ClCompile Include="scr\Product.cpp" />
     <ClCompile Include="scr\StorageZone.cpp" />
     <ClCompile Include="scr\Warehouse.cpp" />
