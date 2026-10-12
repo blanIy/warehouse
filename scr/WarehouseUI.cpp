@@ -295,21 +295,24 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
     for (const auto& p : perishables) {
         std::cout << "Груз: " << p.getName()
             << " | Срок годности: " << p.getExpiryDate()
-            << " | Температурный режим: " << p.getTargetTemperature() << " C\n";
+            << " | Температурный режим: " << p.getTargetTemperature() << " C"
+            << " | Суточный тариф: " << p.calculateDailyStorageCost() << " руб.\n";
     }
 
     std::cout << "\n[Регламент: Хрупкие грузы и штабелирование]\n";
     for (const auto& f : fragiles) {
         std::cout << "Груз: " << f.getName()
             << " | Макс. высота штабеля: " << f.getMaxStackLayers() << " яруса"
-            << " | Упаковка: " << f.getPaddingType() << "\n";
+            << " | Упаковка: " << f.getPaddingType()
+            << " | Суточный тариф: " << f.calculateDailyStorageCost() << " руб.\n";
     }
 
     std::cout << "\n[Регламент: Опасные химические вещества (ADR)]\n";
     for (const auto& c : chemicals) {
         std::cout << "Груз: " << c.getName()
             << " | Классификация опасности: " << c.getHazardClass()
-            << " | Принудительная вентиляция: " << (c.getRequiresVentilation() ? "Обязательно" : "Не требуется") << "\n";
+            << " | Принудительная вентиляция: " << (c.getRequiresVentilation() ? "Обязательно" : "Не требуется")
+            << " | Суточный тариф: " << c.calculateDailyStorageCost() << " руб.\n";
     }
     std::cout << "======================================================\n";
 }
@@ -327,7 +330,7 @@ void demonstrateInheritedSetter(std::vector<PerishableProduct>& perishables,
     fragiles[0].setWeight(6.8);
     chemicals[0].setName("Концентрированная_серная_кислота");
 
-    std::cout << "Успешно обновлены учетные характеристики грузов:\n"
+    std::cout << "Успешно обновлены базовые характеристики через сеттеры:\n"
         << "1. Новая категория груза \"" << perishables[0].getName() << "\": " << perishables[0].getCategory() << "\n"
         << "2. Уточненный фактический вес \"" << fragiles[0].getName() << "\": " << fragiles[0].getWeight() << " кг\n"
         << "3. Обновленное номенклатурное название: " << chemicals[0].getName() << "\n";

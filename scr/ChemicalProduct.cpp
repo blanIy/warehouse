@@ -20,3 +20,7 @@ void ChemicalProduct::setHazardClass(std::string_view newHazardClass) {
 void ChemicalProduct::setRequiresVentilation(bool newVentilation) {
     requiresVentilation = newVentilation;
 }
+
+double ChemicalProduct::calculateDailyStorageCost() const {
+    return (weight * 0.5) + 25.0;
+}

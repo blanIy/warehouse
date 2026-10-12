@@ -22,3 +22,7 @@ void FragileProduct::setMaxStackLayers(int newLayers) {
 void FragileProduct::setPaddingType(std::string_view newPadding) {
     paddingType = newPadding;
 }
+
+double FragileProduct::calculateDailyStorageCost() const {
+    return (weight * 0.5) + 8.0;
+}

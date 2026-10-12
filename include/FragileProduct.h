@@ -15,4 +15,6 @@ public:
 
     void setMaxStackLayers(int newLayers);
     void setPaddingType(std::string_view newPadding);
+
+    double calculateDailyStorageCost() const override;
 };

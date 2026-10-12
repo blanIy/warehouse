@@ -15,4 +15,6 @@ public:
 
     void setExpiryDate(std::string_view newExpiryDate);
     void setTargetTemperature(double newTemperature);
+
+    double calculateDailyStorageCost() const override;
 };

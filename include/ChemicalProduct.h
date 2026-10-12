@@ -15,4 +15,6 @@ public:
 
     void setHazardClass(std::string_view newHazardClass);
     void setRequiresVentilation(bool newVentilation);
+
+    double calculateDailyStorageCost() const override;
 };

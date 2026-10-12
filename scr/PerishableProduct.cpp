@@ -20,3 +20,7 @@ void PerishableProduct::setExpiryDate(std::string_view newExpiryDate) {
 void PerishableProduct::setTargetTemperature(double newTemperature) {
     targetTemperature = newTemperature;
 }
+
+double PerishableProduct::calculateDailyStorageCost() const {
+    return (weight * 0.5) + 15.0;
+}

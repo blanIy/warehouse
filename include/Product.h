@@ -29,6 +29,8 @@ public:
     void setWeight(double newWeight);
     void setVolume(double newVolume);
 
+    virtual double calculateDailyStorageCost() const;
+
     bool operator==(const Product& other) const;
     auto operator<=>(const Product& other) const {
         return weight <=> other.weight;
