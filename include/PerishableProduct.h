@@ -17,4 +17,6 @@ public:
     void setTargetTemperature(double newTemperature);
 
     double calculateDailyStorageCost() const override;
+
+    double calculateCoolingCost(double ambientTemp) const;
 };

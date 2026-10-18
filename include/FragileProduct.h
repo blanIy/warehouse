@@ -17,4 +17,6 @@ public:
     void setPaddingType(std::string_view newPadding);
 
     double calculateDailyStorageCost() const override;
+
+    double calculateMaxStackWeight() const;
 };

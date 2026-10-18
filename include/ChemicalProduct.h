@@ -17,4 +17,6 @@ public:
     void setRequiresVentilation(bool newVentilation);
 
     double calculateDailyStorageCost() const override;
+
+    double calculateVentilationRequirement() const;
 };

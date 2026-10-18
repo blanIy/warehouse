@@ -296,7 +296,8 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
         std::cout << "Груз: " << p.getName()
             << " | Срок годности: " << p.getExpiryDate()
             << " | Температурный режим: " << p.getTargetTemperature() << " C"
-            << " | Суточный тариф: " << p.calculateDailyStorageCost() << " руб.\n";
+            << " | Суточный тариф: " << p.calculateDailyStorageCost() << " руб.\n"
+            << "   -> Доп. расход на охлаждение (при +22 C в зале): " << p.calculateCoolingCost(22.0) << " руб./сутки\n";
     }
 
     std::cout << "\n[Регламент: Хрупкие грузы и штабелирование]\n";
@@ -304,7 +305,8 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
         std::cout << "Груз: " << f.getName()
             << " | Макс. высота штабеля: " << f.getMaxStackLayers() << " яруса"
             << " | Упаковка: " << f.getPaddingType()
-            << " | Суточный тариф: " << f.calculateDailyStorageCost() << " руб.\n";
+            << " | Суточный тариф: " << f.calculateDailyStorageCost() << " руб.\n"
+            << "   -> Допустимая нагрузка на нижнюю коробку: " << f.calculateMaxStackWeight() << " кг\n";
     }
 
     std::cout << "\n[Регламент: Опасные химические вещества (ADR)]\n";
@@ -312,7 +314,8 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
         std::cout << "Груз: " << c.getName()
             << " | Классификация опасности: " << c.getHazardClass()
             << " | Принудительная вентиляция: " << (c.getRequiresVentilation() ? "Обязательно" : "Не требуется")
-            << " | Суточный тариф: " << c.calculateDailyStorageCost() << " руб.\n";
+            << " | Суточный тариф: " << c.calculateDailyStorageCost() << " руб.\n"
+            << "   -> Расчетный расход принудительной вытяжки: " << c.calculateVentilationRequirement() << " м3/час\n";
     }
     std::cout << "======================================================\n";
 }

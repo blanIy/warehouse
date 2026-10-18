@@ -24,3 +24,10 @@ void ChemicalProduct::setRequiresVentilation(bool newVentilation) {
 double ChemicalProduct::calculateDailyStorageCost() const {
     return (weight * 0.5) + 25.0;
 }
+
+double ChemicalProduct::calculateVentilationRequirement() const {
+    if (requiresVentilation) {
+        return volume * 40.0;
+    }
+    return 0.0;
+}
