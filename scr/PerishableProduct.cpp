@@ -22,7 +22,7 @@ void PerishableProduct::setTargetTemperature(double newTemperature) {
 }
 
 double PerishableProduct::calculateDailyStorageCost() const {
-    return (weight * 0.5) + 15.0;
+    return (getWeight() * 0.5) + 15.0;
 }
 
 double PerishableProduct::calculateCoolingCost(double ambientTemp) const {

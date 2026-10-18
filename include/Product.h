@@ -5,7 +5,7 @@
 #include <compare>
 
 class Product {
-protected:
+private:
     std::string sku;
     std::string name;
     std::string category;
@@ -15,6 +15,10 @@ protected:
 public:
     Product() = default;
     Product(std::string_view sku, std::string_view name, std::string_view category, double weight, double volume);
+    Product(const Product&) = default;
+    Product& operator=(const Product&) = default;
+    Product(Product&&) noexcept = default;
+    Product& operator=(Product&&) noexcept = default;
     virtual ~Product() = default;
 
     std::string getSku() const;

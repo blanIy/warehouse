@@ -9,6 +9,11 @@ private:
 public:
     PerishableProduct(std::string_view sku, std::string_view name, std::string_view category,
         double weight, double volume, std::string_view expiryDate, double targetTemperature);
+    PerishableProduct(const PerishableProduct&) = default;
+    PerishableProduct& operator=(const PerishableProduct&) = default;
+    PerishableProduct(PerishableProduct&&) noexcept = default;
+    PerishableProduct& operator=(PerishableProduct&&) noexcept = default;
+    ~PerishableProduct() override = default;
 
     std::string getExpiryDate() const;
     double getTargetTemperature() const;
