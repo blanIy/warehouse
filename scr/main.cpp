@@ -1,6 +1,7 @@
 #include "WarehouseUI.h"
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <clocale>
 
 #ifdef _WIN32
@@ -31,12 +32,10 @@ int main() {
     chemicals.emplace_back("SKU-CHM-01", "Серная_Кислота_ХЧ", "Химреагенты", 30.0, 0.02, "Класс_8_Едкие", true);
     chemicals.emplace_back("SKU-CHM-02", "Растворитель_Органический", "Растворители", 18.0, 0.025, "Класс_3_Огнеопасно", true);
 
-    std::vector<Product> catalog;
-    for (const auto& item : perishables) catalog.push_back(item);
-    for (const auto& item : fragiles) catalog.push_back(item);
-    for (const auto& item : chemicals) catalog.push_back(item);
-    catalog.emplace_back("SKU-STD-01", "Холодильник_Атлант", "Бытовая_техника", 70.0, 1.2);
-    catalog.emplace_back("SKU-STD-02", "Станок_промышленный", "Оборудование", 1800.0, 25.0);
+    std::vector<std::unique_ptr<Product>> catalog;
+    for (const auto& item : perishables) catalog.push_back(item.clone());
+    for (const auto& item : fragiles) catalog.push_back(item.clone());
+    for (const auto& item : chemicals) catalog.push_back(item.clone());
 
     if (auto* zoneB = warehouse.getZone(1); zoneB != nullptr) {
         *zoneB += perishables[0];
@@ -80,6 +79,9 @@ int main() {
             break;
         case 9:
             demonstrateInheritedGetter(perishables, fragiles, chemicals);
+            break;
+        case 10:
+            demonstratePolymorphicReporting(catalog);
             break;
         case 0:
             std::cout << "Смена завершена. База данных склада сохранена.\n";

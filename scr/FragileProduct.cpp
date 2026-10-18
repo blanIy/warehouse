@@ -1,4 +1,5 @@
 #include "FragileProduct.h"
+#include <iostream>
 
 FragileProduct::FragileProduct(std::string_view sku, std::string_view name, std::string_view category,
     double weight, double volume, int maxStackLayers, std::string_view paddingType)
@@ -23,8 +24,25 @@ void FragileProduct::setPaddingType(std::string_view newPadding) {
     paddingType = newPadding;
 }
 
+std::string FragileProduct::getProductType() const {
+    return "Хрупкий груз (Ограничение штабелирования)";
+}
+
+void FragileProduct::printDetailedReport() const {
+    std::cout << "[ПАСПОРТ ХРУПКОГО ГРУЗА]\n"
+        << "Артикул: " << getSku() << " | Название: " << getName() << "\n"
+        << "Масса: " << getWeight() << " кг | Объем: " << getVolume() << " м3\n"
+        << "Предел штабелирования: " << maxStackLayers << " яруса\n"
+        << "Амортизация: " << paddingType << "\n"
+        << "Суточный тариф хранения: " << calculateDailyStorageCost() << " руб.\n";
+}
+
 double FragileProduct::calculateDailyStorageCost() const {
     return (getWeight() * 0.5) + 8.0;
+}
+
+std::unique_ptr<Product> FragileProduct::clone() const {
+    return std::make_unique<FragileProduct>(*this);
 }
 
 double FragileProduct::calculateMaxStackWeight() const {

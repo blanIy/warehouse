@@ -2,6 +2,7 @@
 #include "Product.h"
 #include <string>
 #include <vector>
+#include <memory>
 #include <string_view>
 #include <iostream>
 
@@ -12,10 +13,15 @@ private:
     double maxVolume = 0.0;
     double currentWeight = 0.0;
     double currentVolume = 0.0;
-    std::vector<Product> products;
+    std::vector<std::unique_ptr<Product>> products;
 
 public:
     StorageZone(std::string_view name, double maxWeight, double maxVolume);
+    StorageZone(const StorageZone& other);
+    StorageZone& operator=(const StorageZone& other);
+    StorageZone(StorageZone&&) noexcept = default;
+    StorageZone& operator=(StorageZone&&) noexcept = default;
+    ~StorageZone() = default;
 
     std::string getName() const;
     double getMaxWeight() const;
@@ -44,7 +50,7 @@ public:
         }
         else {
             for (const auto& product : zone.products) {
-                os << "  * " << product << "\n";
+                os << "  * " << *product << " [" << product->getProductType() << "]\n";
             }
         }
         os << "----------------------------------------\n";

@@ -34,10 +34,6 @@ void Product::setVolume(double newVolume) {
     }
 }
 
-double Product::calculateDailyStorageCost() const {
-    return weight * 0.5;
-}
-
 bool Product::operator==(const Product& other) const {
     return sku == other.sku;
 }

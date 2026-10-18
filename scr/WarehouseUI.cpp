@@ -11,20 +11,35 @@ void printMenu() {
         << "3. Отгрузка груза со склада\n"
         << "4. Регистрация нового груза в номенклатуре\n"
         << "5. Логистическая экспертиза и весовой контроль\n"
-        << "6. Базовый реестр номенклатуры\n"
+        << "6. Базовый реестр номенклатуры (Общие параметры)\n"
         << "7. Технологические регламенты хранения грузов\n"
         << "8. Актуализация параметров номенклатуры\n"
         << "9. Контрольная сверка учетных артикулов\n"
+        << "10. Комплексный аудит и печать паспортов всех грузов\n"
         << "0. Завершить смену\n"
         << "======================================================\n"
         << "Выберите действие: ";
 }
 
-void handlePlacement(Warehouse& warehouse, const std::vector<Product>& catalog) {
+void demonstratePolymorphicReporting(const std::vector<std::unique_ptr<Product>>& catalog) {
+    std::cout << "\n======================================================\n"
+        << "    КОМПЛЕКСНЫЙ ТЕХНИЧЕСКИЙ АУДИТ И ПАСПОРТИЗАЦИЯ     \n"
+        << "======================================================\n";
+    for (const auto& item : catalog) {
+        if (item != nullptr) {
+            std::cout << "Отраслевая категория: " << item->getProductType() << "\n";
+            item->printDetailedReport();
+            std::cout << "------------------------------------------------------\n";
+        }
+    }
+}
+
+void handlePlacement(Warehouse& warehouse, const std::vector<std::unique_ptr<Product>>& catalog) {
     std::cout << "\n--- Приемка груза на склад ---\n";
     const auto catalogSize = static_cast<int>(catalog.size());
     for (auto i = 0; i < catalogSize; ++i) {
-        std::cout << (i + 1) << ". " << catalog[static_cast<size_t>(i)] << "\n";
+        std::cout << (i + 1) << ". " << *catalog[static_cast<size_t>(i)]
+            << " [" << catalog[static_cast<size_t>(i)]->getProductType() << "]\n";
     }
     std::cout << "Выберите позицию для размещения (1-" << catalogSize << "): ";
     int pChoice = 0;
@@ -35,7 +50,7 @@ void handlePlacement(Warehouse& warehouse, const std::vector<Product>& catalog) 
         return;
     }
 
-    const auto& selectedProduct = catalog[static_cast<size_t>(pChoice - 1)];
+    const auto& selectedProduct = *catalog[static_cast<size_t>(pChoice - 1)];
 
     const auto zoneCount = warehouse.getZoneCount();
     std::cout << "\nДоступные зоны размещения:\n";
@@ -82,19 +97,18 @@ void handleIssue(Warehouse& warehouse) {
     }
 }
 
-void handleRegisterProduct(std::vector<Product>& catalog,
+void handleRegisterProduct(std::vector<std::unique_ptr<Product>>& catalog,
     std::vector<PerishableProduct>& perishables,
     std::vector<FragileProduct>& fragiles,
     std::vector<ChemicalProduct>& chemicals) {
     std::cout << "\n--- Паспортизация и регистрация груза ---\n"
         << "Выберите категорию учета:\n"
-        << "1. Скоропортящийся груз (Холодильная цепь)\n"
-        << "2. Хрупкий груз (Особый контроль штабелирования)\n"
-        << "3. Опасный химический груз (ADR-регламент)\n"
-        << "4. Стандартный груз\n"
+        << "1. Скоропортящийся груз\n"
+        << "2. Хрупкий груз\n"
+        << "3. Опасный химический груз\n"
         << "Категория: ";
     int type = 0;
-    if (!(std::cin >> type) || type < 1 || type > 4) {
+    if (!(std::cin >> type) || type < 1 || type > 3) {
         std::cout << "Некорректный выбор категории!\n";
         std::cin.clear();
         std::cin.ignore(10000, '\n');
@@ -127,8 +141,8 @@ void handleRegisterProduct(std::vector<Product>& catalog,
         std::cin >> temp;
         PerishableProduct p(sku, name, category, weight, volume, expiry, temp);
         perishables.push_back(p);
-        catalog.push_back(p);
-        std::cout << "\n[УСПЕХ] Скоропортящийся груз зарегистрирован в реестре:\n" << p << "\n";
+        catalog.push_back(p.clone());
+        std::cout << "\n[УСПЕХ] Зарегистрирован: " << p.getProductType() << "\n";
     }
     else if (type == 2) {
         int layers = 1;
@@ -139,10 +153,10 @@ void handleRegisterProduct(std::vector<Product>& catalog,
         std::cin >> padding;
         FragileProduct f(sku, name, category, weight, volume, layers, padding);
         fragiles.push_back(f);
-        catalog.push_back(f);
-        std::cout << "\n[УСПЕХ] Хрупкий груз зарегистрирован в реестре:\n" << f << "\n";
+        catalog.push_back(f.clone());
+        std::cout << "\n[УСПЕХ] Зарегистрирован: " << f.getProductType() << "\n";
     }
-    else if (type == 3) {
+    else {
         std::string hazard;
         int ventChoice = 0;
         std::cout << "Введите класс опасности ADR: ";
@@ -151,13 +165,8 @@ void handleRegisterProduct(std::vector<Product>& catalog,
         std::cin >> ventChoice;
         ChemicalProduct c(sku, name, category, weight, volume, hazard, ventChoice == 1);
         chemicals.push_back(c);
-        catalog.push_back(c);
-        std::cout << "\n[УСПЕХ] Опасный химический груз зарегистрирован в реестре:\n" << c << "\n";
-    }
-    else {
-        Product prod(sku, name, category, weight, volume);
-        catalog.push_back(prod);
-        std::cout << "\n[УСПЕХ] Стандартный груз зарегистрирован в реестре:\n" << prod << "\n";
+        catalog.push_back(c.clone());
+        std::cout << "\n[УСПЕХ] Зарегистрирован: " << c.getProductType() << "\n";
     }
 }
 
@@ -186,42 +195,30 @@ void compareTwoProducts(const Product& p1, const Product& p2) {
     std::cout << "   -> Плотность второго груза: " << calculateDensity(p2) << " кг/м3\n";
 }
 
-void rankAndAnalyzeAll(const std::vector<Product>& catalog) {
+void rankAndAnalyzeAll(const std::vector<std::unique_ptr<Product>>& catalog) {
     std::cout << "\n======================================================\n"
         << "       ВЕДОМОСТЬ РАНЖИРОВАНИЯ ВСЕХ ГРУЗОВ ПО МАССЕ    \n"
         << "======================================================\n";
 
-    auto items = catalog;
+    std::vector<const Product*> items;
+    for (const auto& p : catalog) {
+        if (p != nullptr) items.push_back(p.get());
+    }
+
     for (size_t i = 0; i < items.size(); ++i) {
         for (size_t j = i + 1; j < items.size(); ++j) {
-            if (items[i] < items[j]) {
+            if (*items[i] < *items[j]) {
                 std::swap(items[i], items[j]);
             }
         }
     }
 
     for (size_t i = 0; i < items.size(); ++i) {
-        std::cout << (i + 1) << ". " << items[i] << " | Плотность: " << calculateDensity(items[i]) << " кг/м3\n";
+        std::cout << (i + 1) << ". " << *items[i] << " | Плотность: " << calculateDensity(*items[i]) << " кг/м3\n";
     }
-
-    Product heaviest = items[0];
-    Product lightest = items[0];
-    for (const auto& item : items) {
-        if (item > heaviest) {
-            heaviest = item;
-        }
-        if (item < lightest) {
-            lightest = item;
-        }
-    }
-
-    std::cout << "\nИтоги весового контроля:\n"
-        << "Наибольшая масса: " << heaviest.getName() << " (" << heaviest.getWeight() << " кг)\n"
-        << "Наименьшая масса:  " << lightest.getName() << " (" << lightest.getWeight() << " кг)\n"
-        << "======================================================\n";
 }
 
-void handleLogisticsAnalysis(const std::vector<Product>& catalog) {
+void handleLogisticsAnalysis(const std::vector<std::unique_ptr<Product>>& catalog) {
     const auto catalogSize = static_cast<int>(catalog.size());
     if (catalogSize < 2) {
         std::cout << "\nВ каталоге недостаточно позиций для анализа!\n";
@@ -233,7 +230,7 @@ void handleLogisticsAnalysis(const std::vector<Product>& catalog) {
         << "======================================================\n";
 
     for (auto i = 0; i < catalogSize; ++i) {
-        std::cout << (i + 1) << ". " << catalog[static_cast<size_t>(i)] << "\n";
+        std::cout << (i + 1) << ". " << *catalog[static_cast<size_t>(i)] << "\n";
     }
 
     std::cout << "\nВыберите первый груз (1-" << catalogSize << "): ";
@@ -250,7 +247,7 @@ void handleLogisticsAnalysis(const std::vector<Product>& catalog) {
         return;
     }
 
-    compareTwoProducts(catalog[static_cast<size_t>(c1 - 1)], catalog[static_cast<size_t>(c2 - 1)]);
+    compareTwoProducts(*catalog[static_cast<size_t>(c1 - 1)], *catalog[static_cast<size_t>(c2 - 1)]);
     rankAndAnalyzeAll(catalog);
 }
 
@@ -297,7 +294,7 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
             << " | Срок годности: " << p.getExpiryDate()
             << " | Температурный режим: " << p.getTargetTemperature() << " C"
             << " | Суточный тариф: " << p.calculateDailyStorageCost() << " руб.\n"
-            << "   -> Доп. расход на охлаждение (при +22 C в зале): " << p.calculateCoolingCost(22.0) << " руб./сутки\n";
+            << "   -> Расход на охлаждение: " << p.calculateCoolingCost(22.0) << " руб./сутки\n";
     }
 
     std::cout << "\n[Регламент: Хрупкие грузы и штабелирование]\n";
@@ -306,7 +303,7 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
             << " | Макс. высота штабеля: " << f.getMaxStackLayers() << " яруса"
             << " | Упаковка: " << f.getPaddingType()
             << " | Суточный тариф: " << f.calculateDailyStorageCost() << " руб.\n"
-            << "   -> Допустимая нагрузка на нижнюю коробку: " << f.calculateMaxStackWeight() << " кг\n";
+            << "   -> Допустимая нагрузка на нижний ярус: " << f.calculateMaxStackWeight() << " кг\n";
     }
 
     std::cout << "\n[Регламент: Опасные химические вещества (ADR)]\n";
@@ -315,7 +312,7 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
             << " | Классификация опасности: " << c.getHazardClass()
             << " | Принудительная вентиляция: " << (c.getRequiresVentilation() ? "Обязательно" : "Не требуется")
             << " | Суточный тариф: " << c.calculateDailyStorageCost() << " руб.\n"
-            << "   -> Расчетный расход принудительной вытяжки: " << c.calculateVentilationRequirement() << " м3/час\n";
+            << "   -> Расход принудительной вытяжки: " << c.calculateVentilationRequirement() << " м3/час\n";
     }
     std::cout << "======================================================\n";
 }
@@ -333,10 +330,10 @@ void demonstrateInheritedSetter(std::vector<PerishableProduct>& perishables,
     fragiles[0].setWeight(6.8);
     chemicals[0].setName("Концентрированная_серная_кислота");
 
-    std::cout << "Успешно обновлены базовые характеристики через сеттеры:\n"
-        << "1. Новая категория груза \"" << perishables[0].getName() << "\": " << perishables[0].getCategory() << "\n"
-        << "2. Уточненный фактический вес \"" << fragiles[0].getName() << "\": " << fragiles[0].getWeight() << " кг\n"
-        << "3. Обновленное номенклатурное название: " << chemicals[0].getName() << "\n";
+    std::cout << "Успешно обновлены характеристики грузов:\n"
+        << "1. Обновлена категория груза \"" << perishables[0].getName() << "\": " << perishables[0].getCategory() << "\n"
+        << "2. Уточнен фактический вес \"" << fragiles[0].getName() << "\": " << fragiles[0].getWeight() << " кг\n"
+        << "3. Обновлено номенклатурное название: " << chemicals[0].getName() << "\n";
     std::cout << "======================================================\n";
 }
 
@@ -348,13 +345,13 @@ void demonstrateInheritedGetter(const std::vector<PerishableProduct>& perishable
         << "======================================================\n";
 
     for (const auto& p : perishables) {
-        std::cout << p.getName() << " -> Артикул: " << p.getSku() << "\n";
+        std::cout << p.getName() << " -> Учетный номер: " << p.getSku() << "\n";
     }
     for (const auto& f : fragiles) {
-        std::cout << f.getName() << " -> Артикул: " << f.getSku() << "\n";
+        std::cout << f.getName() << " -> Учетный номер: " << f.getSku() << "\n";
     }
     for (const auto& c : chemicals) {
-        std::cout << c.getName() << " -> Артикул: " << c.getSku() << "\n";
+        std::cout << c.getName() << " -> Учетный номер: " << c.getSku() << "\n";
     }
     std::cout << "======================================================\n";
 }

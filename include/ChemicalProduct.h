@@ -21,7 +21,10 @@ public:
     void setHazardClass(std::string_view newHazardClass);
     void setRequiresVentilation(bool newVentilation);
 
+    std::string getProductType() const override;
+    void printDetailedReport() const override;
     double calculateDailyStorageCost() const override;
+    std::unique_ptr<Product> clone() const override;
 
     double calculateVentilationRequirement() const;
 };

@@ -21,7 +21,10 @@ public:
     void setMaxStackLayers(int newLayers);
     void setPaddingType(std::string_view newPadding);
 
+    std::string getProductType() const override;
+    void printDetailedReport() const override;
     double calculateDailyStorageCost() const override;
+    std::unique_ptr<Product> clone() const override;
 
     double calculateMaxStackWeight() const;
 };

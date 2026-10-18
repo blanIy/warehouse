@@ -21,7 +21,10 @@ public:
     void setExpiryDate(std::string_view newExpiryDate);
     void setTargetTemperature(double newTemperature);
 
+    std::string getProductType() const override;
+    void printDetailedReport() const override;
     double calculateDailyStorageCost() const override;
+    std::unique_ptr<Product> clone() const override;
 
     double calculateCoolingCost(double ambientTemp) const;
 };

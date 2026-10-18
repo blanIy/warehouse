@@ -2,6 +2,7 @@
 #include <string>
 #include <string_view>
 #include <iostream>
+#include <memory>
 #include <compare>
 
 class Product {
@@ -33,7 +34,10 @@ public:
     void setWeight(double newWeight);
     void setVolume(double newVolume);
 
-    virtual double calculateDailyStorageCost() const;
+    virtual std::string getProductType() const = 0;
+    virtual void printDetailedReport() const = 0;
+    virtual double calculateDailyStorageCost() const = 0;
+    virtual std::unique_ptr<Product> clone() const = 0;
 
     bool operator==(const Product& other) const;
     auto operator<=>(const Product& other) const {
@@ -44,20 +48,6 @@ public:
         os << "[" << product.sku << "] " << product.name << " | Категория: " << product.category
             << " | Масса: " << product.weight << " кг | Объем: " << product.volume << " м3";
         return os;
-    }
-
-    friend std::istream& operator>>(std::istream& is, Product& product) {
-        std::cout << "Введите артикул: ";
-        is >> product.sku;
-        std::cout << "Введите название: ";
-        is >> product.name;
-        std::cout << "Введите категорию: ";
-        is >> product.category;
-        std::cout << "Введите массу (кг): ";
-        is >> product.weight;
-        std::cout << "Введите объем (м3): ";
-        is >> product.volume;
-        return is;
     }
 
     friend double calculateDensity(const Product& product);
