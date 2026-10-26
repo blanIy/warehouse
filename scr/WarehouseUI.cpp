@@ -1,6 +1,7 @@
 #include "WarehouseUI.h"
 #include <iostream>
 #include <utility>
+#include "StandardProduct.h"
 
 void printMenu() {
     std::cout << "\n======================================================\n"
@@ -16,6 +17,7 @@ void printMenu() {
         << "8. Актуализация параметров номенклатуры\n"
         << "9. Контрольная сверка учетных артикулов\n"
         << "10. Комплексный аудит и печать паспортов всех грузов\n"
+        << "11. Реестровый аудит и критериальный отбор (Грузы / Зоны)\n"
         << "0. Завершить смену\n"
         << "======================================================\n"
         << "Выберите действие: ";
@@ -106,9 +108,10 @@ void handleRegisterProduct(std::vector<std::unique_ptr<Product>>& catalog,
         << "1. Скоропортящийся груз\n"
         << "2. Хрупкий груз\n"
         << "3. Опасный химический груз\n"
+        << "4. Стандартный груз\n"
         << "Категория: ";
     int type = 0;
-    if (!(std::cin >> type) || type < 1 || type > 3) {
+    if (!(std::cin >> type) || type < 1 || type > 4) {
         std::cout << "Некорректный выбор категории!\n";
         std::cin.clear();
         std::cin.ignore(10000, '\n');
@@ -156,7 +159,7 @@ void handleRegisterProduct(std::vector<std::unique_ptr<Product>>& catalog,
         catalog.push_back(f.clone());
         std::cout << "\n[УСПЕХ] Зарегистрирован: " << f.getProductType() << "\n";
     }
-    else {
+    else if (type == 3) {
         std::string hazard;
         int ventChoice = 0;
         std::cout << "Введите класс опасности ADR: ";
@@ -167,6 +170,11 @@ void handleRegisterProduct(std::vector<std::unique_ptr<Product>>& catalog,
         chemicals.push_back(c);
         catalog.push_back(c.clone());
         std::cout << "\n[УСПЕХ] Зарегистрирован: " << c.getProductType() << "\n";
+    }
+    else {
+        StandardProduct prod(sku, name, category, weight, volume, "Стандартная_тара");
+        catalog.push_back(prod.clone());
+        std::cout << "\n[УСПЕХ] Зарегистрирован: " << prod.getProductType() << "\n";
     }
 }
 
@@ -353,5 +361,49 @@ void demonstrateInheritedGetter(const std::vector<PerishableProduct>& perishable
     for (const auto& c : chemicals) {
         std::cout << c.getName() << " -> Учетный номер: " << c.getSku() << "\n";
     }
+    std::cout << "======================================================\n";
+}
+void demonstrateTemplateCollections() {
+    std::cout << "\n======================================================\n"
+        << "     СВОДНЫЙ АУДИТ И СЕЛЕКЦИЯ СКЛАДСКИХ РЕЕСТРОВ      \n"
+        << "======================================================\n";
+
+    Collection<StandardProduct> productCollection;
+    productCollection.add(StandardProduct("SKU-STD-01", "Холодильник_Атлант", "Бытовая_техника", 70.0, 1.2, "Коробка"));
+    productCollection.add(StandardProduct("SKU-STD-02", "Станок_промышленный", "Оборудование", 1800.0, 25.0, "Поддон"));
+    productCollection.add(StandardProduct("SKU-STD-03", "Паллет_цемента", "Стройматериалы", 1000.0, 1.0, "Мешки"));
+
+    std::cout << "1. Реестр стандартных грузов [Учтено позиций: " << productCollection.getSize() << "]:\n";
+    productCollection.print();
+
+    std::cout << "\n2. Карточка позиции по индексу [1]:\n" << productCollection.get(1) << "\n";
+
+    std::cout << "\n3. Критериальная выборка крупнотоннажных грузов (масса более 500 кг):\n";
+    auto heavyProducts = filterCollection(productCollection, [](const StandardProduct& p) {
+        return p.getWeight() > 500.0;
+        });
+    heavyProducts.print();
+
+    std::cout << "\n------------------------------------------------------\n";
+
+    Collection<StorageZone> zoneCollection;
+    zoneCollection.add(StorageZone("Зона А (Крупногабарит)", 4000.0, 60.0));
+    zoneCollection.add(StorageZone("Зона B (Спецхранение)", 800.0, 15.0));
+    zoneCollection.add(StorageZone("Зона C (Легкие грузы)", 300.0, 5.0));
+
+    std::cout << "4. Реестр активных зон и стеллажей [Всего зон: " << zoneCollection.getSize() << "]:\n";
+    zoneCollection.print();
+
+    std::cout << "\n5. Автоподбор зоны под тяжеловесный груз (лимит несущей способности от 1000 кг):\n";
+    const auto* matchedZone = findFirstMatch(zoneCollection, [](const StorageZone& z) {
+        return z.getMaxWeight() >= 1000.0;
+        });
+    if (matchedZone != nullptr) {
+        std::cout << "Назначена зона: " << matchedZone->getName() << " (Лимит: " << matchedZone->getMaxWeight() << " кг)\n";
+    }
+
+    std::cout << "\n6. Вывод зоны на регламентное техобслуживание:\n";
+    zoneCollection.removeAt(2);
+    std::cout << "Стеллаж списан на обслуживание. Активных зон в реестре: " << zoneCollection.getSize() << "\n";
     std::cout << "======================================================\n";
 }

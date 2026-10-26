@@ -1,4 +1,5 @@
 #include "WarehouseUI.h"
+#include "StandardProduct.h"
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -36,6 +37,8 @@ int main() {
     for (const auto& item : perishables) catalog.push_back(item.clone());
     for (const auto& item : fragiles) catalog.push_back(item.clone());
     for (const auto& item : chemicals) catalog.push_back(item.clone());
+    catalog.push_back(std::make_unique<StandardProduct>("SKU-STD-01", "Холодильник_Атлант", "Бытовая_техника", 70.0, 1.2, "Заводская_коробка"));
+    catalog.push_back(std::make_unique<StandardProduct>("SKU-STD-02", "Станок_промышленный", "Оборудование", 1800.0, 25.0, "Деревянный_поддон"));
 
     if (auto* zoneB = warehouse.getZone(1); zoneB != nullptr) {
         *zoneB += perishables[0];
@@ -82,6 +85,9 @@ int main() {
             break;
         case 10:
             demonstratePolymorphicReporting(catalog);
+            break;
+        case 11:
+            demonstrateTemplateCollections();
             break;
         case 0:
             std::cout << "Смена завершена. База данных склада сохранена.\n";

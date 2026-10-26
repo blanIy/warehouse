@@ -56,4 +56,7 @@ public:
         os << "----------------------------------------\n";
         return os;
     }
+    bool operator==(const StorageZone& other) const {
+        return name == other.name;
+    }
 };

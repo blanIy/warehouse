@@ -20,9 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ChemicalProduct.h" />
+    <ClInclude Include="include\Collection.h" />
     <ClInclude Include="include\FragileProduct.h" />
     <ClInclude Include="include\PerishableProduct.h" />
     <ClInclude Include="include\Product.h" />
+    <ClInclude Include="include\StandardProduct.h" />
     <ClInclude Include="include\StorageZone.h" />
     <ClInclude Include="include\Warehouse.h" />
     <ClInclude Include="include\WarehouseUI.h" />
@@ -33,6 +35,7 @@
     <ClCompile Include="scr\main.cpp" />
     <ClCompile Include="scr\PerishableProduct.cpp" />
     <ClCompile Include="scr\Product.cpp" />
+    <ClCompile Include="scr\StandardProduct.cpp" />
     <ClCompile Include="scr\StorageZone.cpp" />
     <ClCompile Include="scr\Warehouse.cpp" />
     <ClCompile Include="scr\WarehouseUI.cpp" />

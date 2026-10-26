@@ -1,8 +1,10 @@
 #pragma once
 #include "Warehouse.h"
+#include "StandardProduct.h"
 #include "PerishableProduct.h"
 #include "FragileProduct.h"
 #include "ChemicalProduct.h"
+#include "Collection.h"
 #include <vector>
 #include <memory>
 
@@ -27,3 +29,4 @@ void demonstrateInheritedGetter(const std::vector<PerishableProduct>& perishable
     const std::vector<FragileProduct>& fragiles,
     const std::vector<ChemicalProduct>& chemicals);
 void demonstratePolymorphicReporting(const std::vector<std::unique_ptr<Product>>& catalog);
+void demonstrateTemplateCollections();
