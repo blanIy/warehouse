@@ -1,0 +1,108 @@
+#pragma once
+
+template<typename T>
+void Collection<T>::add(const T& item) {
+    items.push_back(item);
+}
+
+template<typename T>
+void Collection<T>::add(T&& item) {
+    items.push_back(std::move(item));
+}
+
+template<typename T>
+bool Collection<T>::remove(const T& item) {
+    for (auto it = items.begin(); it != items.end(); ++it) {
+        if (*it == item) {
+            items.erase(it);
+            return true;
+        }
+    }
+    return false;
+}
+
+template<typename T>
+bool Collection<T>::removeAt(size_t index) {
+    if (index < items.size()) {
+        items.erase(items.begin() + index);
+        return true;
+    }
+    return false;
+}
+
+template<typename T>
+T& Collection<T>::get(size_t index) {
+    return items.at(index);
+}
+
+template<typename T>
+const T& Collection<T>::get(size_t index) const {
+    return items.at(index);
+}
+
+template<typename T>
+T& Collection<T>::operator[](size_t index) {
+    return items[index];
+}
+
+template<typename T>
+const T& Collection<T>::operator[](size_t index) const {
+    return items[index];
+}
+
+template<typename T>
+int Collection<T>::find(const T& item) const {
+    for (size_t i = 0; i < items.size(); ++i) {
+        if (items[i] == item) {
+            return static_cast<int>(i);
+        }
+    }
+    return -1;
+}
+
+template<typename T>
+size_t Collection<T>::getSize() const {
+    return items.size();
+}
+
+template<typename T>
+bool Collection<T>::isEmpty() const {
+    return items.empty();
+}
+
+template<typename T>
+void Collection<T>::clear() {
+    items.clear();
+}
+
+template<typename T>
+void Collection<T>::print() const {
+    if (items.empty()) {
+        std::cout << "Коллекция пуста.\n";
+        return;
+    }
+    for (size_t i = 0; i < items.size(); ++i) {
+        std::cout << (i + 1) << ". " << items[i] << "\n";
+    }
+}
+
+template<typename T, typename Predicate>
+Collection<T> filterCollection(const Collection<T>& collection, Predicate pred) {
+    Collection<T> result;
+    for (size_t i = 0; i < collection.getSize(); ++i) {
+        if (pred(collection[i])) {
+            result.add(collection[i]);
+        }
+    }
+    return result;
+}
+
+template<typename T, typename Predicate>
+const T* findFirstMatch(const Collection<T>& collection, Predicate pred) {
+    for (size_t i = 0; i < collection.getSize(); ++i) {
+        if (pred(collection[i])) {
+            return &collection[i];
+        }
+    }
+    return nullptr;
+}
