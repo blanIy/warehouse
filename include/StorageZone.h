@@ -21,7 +21,7 @@ public:
     StorageZone& operator=(const StorageZone& other);
     StorageZone(StorageZone&&) noexcept = default;
     StorageZone& operator=(StorageZone&&) noexcept = default;
-    ~StorageZone() = default;
+    ~StorageZone();
 
     std::string getName() const;
     double getMaxWeight() const;
@@ -39,6 +39,9 @@ public:
 
     StorageZone& operator+=(const Product& product);
     StorageZone& operator-=(std::string_view sku);
+    bool operator==(const StorageZone& other) const {
+        return name == other.name;
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const StorageZone& zone) {
         os << "--- " << zone.name << " ---\n"
@@ -55,8 +58,5 @@ public:
         }
         os << "----------------------------------------\n";
         return os;
-    }
-    bool operator==(const StorageZone& other) const {
-        return name == other.name;
     }
 };

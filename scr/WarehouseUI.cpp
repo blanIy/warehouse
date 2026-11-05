@@ -395,15 +395,14 @@ void demonstrateTemplateCollections() {
     zoneCollection.print();
 
     std::cout << "\n5. Автоподбор зоны под тяжеловесный груз (лимит несущей способности от 1000 кг):\n";
-    const auto* matchedZone = findFirstMatch(zoneCollection, [](const StorageZone& z) {
-        return z.getMaxWeight() >= 1000.0;
-        });
-    if (matchedZone != nullptr) {
+    if (const auto* matchedZone = findFirstMatch(zoneCollection, [](const StorageZone& z) {
+            return z.getMaxWeight() >= 1000.0;
+        }); matchedZone != nullptr) {
         std::cout << "Назначена зона: " << matchedZone->getName() << " (Лимит: " << matchedZone->getMaxWeight() << " кг)\n";
     }
 
     std::cout << "\n6. Вывод зоны на регламентное техобслуживание:\n";
-    zoneCollection.removeAt(2);
-    std::cout << "Стеллаж списан на обслуживание. Активных зон в реестре: " << zoneCollection.getSize() << "\n";
-    std::cout << "======================================================\n";
+    if (zoneCollection.removeAt(2)) {
+        std::cout << "Стеллаж списан на обслуживание. Активных зон в реестре: " << zoneCollection.getSize() << "\n";
+    }
 }

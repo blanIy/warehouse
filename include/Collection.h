@@ -3,7 +3,6 @@
 #include <iostream>
 #include <utility>
 #include <cstddef>
-
 template<typename T>
 class Collection {
 private:

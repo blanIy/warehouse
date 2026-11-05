@@ -33,6 +33,10 @@ StorageZone& StorageZone::operator=(const StorageZone& other) {
     return *this;
 }
 
+StorageZone::~StorageZone() {
+    products.clear();
+}
+
 std::string StorageZone::getName() const { return name; }
 double StorageZone::getMaxWeight() const { return maxWeight; }
 double StorageZone::getMaxVolume() const { return maxVolume; }
