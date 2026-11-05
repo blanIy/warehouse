@@ -1,7 +1,6 @@
 #include "WarehouseUI.h"
 #include <iostream>
 #include <utility>
-#include "StandardProduct.h"
 
 void printMenu() {
     std::cout << "\n======================================================\n"
@@ -17,17 +16,18 @@ void printMenu() {
         << "8. Актуализация параметров номенклатуры\n"
         << "9. Контрольная сверка учетных артикулов\n"
         << "10. Комплексный аудит и печать паспортов всех грузов\n"
-        << "11. Реестровый аудит и критериальный отбор (Грузы / Зоны)\n"
+        << "11. Сводный аудит и селекция складских реестров\n"
         << "0. Завершить смену\n"
         << "======================================================\n"
         << "Выберите действие: ";
 }
 
-void demonstratePolymorphicReporting(const std::vector<std::unique_ptr<Product>>& catalog) {
+void demonstratePolymorphicReporting(const Collection<std::shared_ptr<Product>>& catalog) {
     std::cout << "\n======================================================\n"
         << "    КОМПЛЕКСНЫЙ ТЕХНИЧЕСКИЙ АУДИТ И ПАСПОРТИЗАЦИЯ     \n"
         << "======================================================\n";
-    for (const auto& item : catalog) {
+    for (size_t i = 0; i < catalog.getSize(); ++i) {
+        const auto& item = catalog[i];
         if (item != nullptr) {
             std::cout << "Отраслевая категория: " << item->getProductType() << "\n";
             item->printDetailedReport();
@@ -36,9 +36,9 @@ void demonstratePolymorphicReporting(const std::vector<std::unique_ptr<Product>>
     }
 }
 
-void handlePlacement(Warehouse& warehouse, const std::vector<std::unique_ptr<Product>>& catalog) {
+void handlePlacement(Warehouse& warehouse, const Collection<std::shared_ptr<Product>>& catalog) {
     std::cout << "\n--- Приемка груза на склад ---\n";
-    const auto catalogSize = static_cast<int>(catalog.size());
+    const auto catalogSize = static_cast<int>(catalog.getSize());
     for (auto i = 0; i < catalogSize; ++i) {
         std::cout << (i + 1) << ". " << *catalog[static_cast<size_t>(i)]
             << " [" << catalog[static_cast<size_t>(i)]->getProductType() << "]\n";
@@ -99,10 +99,10 @@ void handleIssue(Warehouse& warehouse) {
     }
 }
 
-void handleRegisterProduct(std::vector<std::unique_ptr<Product>>& catalog,
-    std::vector<PerishableProduct>& perishables,
-    std::vector<FragileProduct>& fragiles,
-    std::vector<ChemicalProduct>& chemicals) {
+void handleRegisterProduct(Collection<std::shared_ptr<Product>>& catalog,
+    Collection<PerishableProduct>& perishables,
+    Collection<FragileProduct>& fragiles,
+    Collection<ChemicalProduct>& chemicals) {
     std::cout << "\n--- Паспортизация и регистрация груза ---\n"
         << "Выберите категорию учета:\n"
         << "1. Скоропортящийся груз\n"
@@ -143,8 +143,8 @@ void handleRegisterProduct(std::vector<std::unique_ptr<Product>>& catalog,
         std::cout << "Введите температуру хранения (C): ";
         std::cin >> temp;
         PerishableProduct p(sku, name, category, weight, volume, expiry, temp);
-        perishables.push_back(p);
-        catalog.push_back(p.clone());
+        perishables.add(p);
+        catalog.add(std::make_shared<PerishableProduct>(p));
         std::cout << "\n[УСПЕХ] Зарегистрирован: " << p.getProductType() << "\n";
     }
     else if (type == 2) {
@@ -155,8 +155,8 @@ void handleRegisterProduct(std::vector<std::unique_ptr<Product>>& catalog,
         std::cout << "Введите тип упаковки: ";
         std::cin >> padding;
         FragileProduct f(sku, name, category, weight, volume, layers, padding);
-        fragiles.push_back(f);
-        catalog.push_back(f.clone());
+        fragiles.add(f);
+        catalog.add(std::make_shared<FragileProduct>(f));
         std::cout << "\n[УСПЕХ] Зарегистрирован: " << f.getProductType() << "\n";
     }
     else if (type == 3) {
@@ -167,13 +167,13 @@ void handleRegisterProduct(std::vector<std::unique_ptr<Product>>& catalog,
         std::cout << "Требуется принудительная вентиляция (1 - Да, 0 - Нет): ";
         std::cin >> ventChoice;
         ChemicalProduct c(sku, name, category, weight, volume, hazard, ventChoice == 1);
-        chemicals.push_back(c);
-        catalog.push_back(c.clone());
+        chemicals.add(c);
+        catalog.add(std::make_shared<ChemicalProduct>(c));
         std::cout << "\n[УСПЕХ] Зарегистрирован: " << c.getProductType() << "\n";
     }
     else {
         StandardProduct prod(sku, name, category, weight, volume, "Стандартная_тара");
-        catalog.push_back(prod.clone());
+        catalog.add(std::make_shared<StandardProduct>(prod));
         std::cout << "\n[УСПЕХ] Зарегистрирован: " << prod.getProductType() << "\n";
     }
 }
@@ -203,14 +203,14 @@ void compareTwoProducts(const Product& p1, const Product& p2) {
     std::cout << "   -> Плотность второго груза: " << calculateDensity(p2) << " кг/м3\n";
 }
 
-void rankAndAnalyzeAll(const std::vector<std::unique_ptr<Product>>& catalog) {
+void rankAndAnalyzeAll(const Collection<std::shared_ptr<Product>>& catalog) {
     std::cout << "\n======================================================\n"
         << "       ВЕДОМОСТЬ РАНЖИРОВАНИЯ ВСЕХ ГРУЗОВ ПО МАССЕ    \n"
         << "======================================================\n";
 
     std::vector<const Product*> items;
-    for (const auto& p : catalog) {
-        if (p != nullptr) items.push_back(p.get());
+    for (size_t i = 0; i < catalog.getSize(); ++i) {
+        if (catalog[i] != nullptr) items.push_back(catalog[i].get());
     }
 
     for (size_t i = 0; i < items.size(); ++i) {
@@ -226,8 +226,8 @@ void rankAndAnalyzeAll(const std::vector<std::unique_ptr<Product>>& catalog) {
     }
 }
 
-void handleLogisticsAnalysis(const std::vector<std::unique_ptr<Product>>& catalog) {
-    const auto catalogSize = static_cast<int>(catalog.size());
+void handleLogisticsAnalysis(const Collection<std::shared_ptr<Product>>& catalog) {
+    const auto catalogSize = static_cast<int>(catalog.getSize());
     if (catalogSize < 2) {
         std::cout << "\nВ каталоге недостаточно позиций для анализа!\n";
         return;
@@ -259,29 +259,32 @@ void handleLogisticsAnalysis(const std::vector<std::unique_ptr<Product>>& catalo
     rankAndAnalyzeAll(catalog);
 }
 
-void showInheritedFields(const std::vector<PerishableProduct>& perishables,
-    const std::vector<FragileProduct>& fragiles,
-    const std::vector<ChemicalProduct>& chemicals) {
+void showInheritedFields(const Collection<PerishableProduct>& perishables,
+    const Collection<FragileProduct>& fragiles,
+    const Collection<ChemicalProduct>& chemicals) {
     std::cout << "\n======================================================\n"
         << "       БАЗОВЫЙ РЕЕСТР НОМЕНКЛАТУРЫ (ОБЩИЕ ПАРАМЕТРЫ)  \n"
         << "======================================================\n";
 
     std::cout << "[Группа: Скоропортящиеся грузы]\n";
-    for (const auto& p : perishables) {
+    for (size_t i = 0; i < perishables.getSize(); ++i) {
+        const auto& p = perishables[i];
         std::cout << "Артикул: " << p.getSku() << " | Наименование: " << p.getName()
             << " | Группа: " << p.getCategory() << " | Масса: " << p.getWeight()
             << " кг | Объем: " << p.getVolume() << " м3\n";
     }
 
     std::cout << "\n[Группа: Хрупкие и стеклянные изделия]\n";
-    for (const auto& f : fragiles) {
+    for (size_t i = 0; i < fragiles.getSize(); ++i) {
+        const auto& f = fragiles[i];
         std::cout << "Артикул: " << f.getSku() << " | Наименование: " << f.getName()
             << " | Группа: " << f.getCategory() << " | Масса: " << f.getWeight()
             << " кг | Объем: " << f.getVolume() << " м3\n";
     }
 
     std::cout << "\n[Группа: Химические реактивы и материалы]\n";
-    for (const auto& c : chemicals) {
+    for (size_t i = 0; i < chemicals.getSize(); ++i) {
+        const auto& c = chemicals[i];
         std::cout << "Артикул: " << c.getSku() << " | Наименование: " << c.getName()
             << " | Группа: " << c.getCategory() << " | Масса: " << c.getWeight()
             << " кг | Объем: " << c.getVolume() << " м3\n";
@@ -289,15 +292,16 @@ void showInheritedFields(const std::vector<PerishableProduct>& perishables,
     std::cout << "======================================================\n";
 }
 
-void showDerivedFields(const std::vector<PerishableProduct>& perishables,
-    const std::vector<FragileProduct>& fragiles,
-    const std::vector<ChemicalProduct>& chemicals) {
+void showDerivedFields(const Collection<PerishableProduct>& perishables,
+    const Collection<FragileProduct>& fragiles,
+    const Collection<ChemicalProduct>& chemicals) {
     std::cout << "\n======================================================\n"
         << "    ТЕХНОЛОГИЧЕСКИЕ РЕГЛАМЕНТЫ И УСЛОВИЯ ХРАНЕНИЯ     \n"
         << "======================================================\n";
 
     std::cout << "[Регламент: Холодильная цепь]\n";
-    for (const auto& p : perishables) {
+    for (size_t i = 0; i < perishables.getSize(); ++i) {
+        const auto& p = perishables[i];
         std::cout << "Груз: " << p.getName()
             << " | Срок годности: " << p.getExpiryDate()
             << " | Температурный режим: " << p.getTargetTemperature() << " C"
@@ -306,7 +310,8 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
     }
 
     std::cout << "\n[Регламент: Хрупкие грузы и штабелирование]\n";
-    for (const auto& f : fragiles) {
+    for (size_t i = 0; i < fragiles.getSize(); ++i) {
+        const auto& f = fragiles[i];
         std::cout << "Груз: " << f.getName()
             << " | Макс. высота штабеля: " << f.getMaxStackLayers() << " яруса"
             << " | Упаковка: " << f.getPaddingType()
@@ -315,7 +320,8 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
     }
 
     std::cout << "\n[Регламент: Опасные химические вещества (ADR)]\n";
-    for (const auto& c : chemicals) {
+    for (size_t i = 0; i < chemicals.getSize(); ++i) {
+        const auto& c = chemicals[i];
         std::cout << "Груз: " << c.getName()
             << " | Классификация опасности: " << c.getHazardClass()
             << " | Принудительная вентиляция: " << (c.getRequiresVentilation() ? "Обязательно" : "Не требуется")
@@ -325,10 +331,10 @@ void showDerivedFields(const std::vector<PerishableProduct>& perishables,
     std::cout << "======================================================\n";
 }
 
-void demonstrateInheritedSetter(std::vector<PerishableProduct>& perishables,
-    std::vector<FragileProduct>& fragiles,
-    std::vector<ChemicalProduct>& chemicals) {
-    if (perishables.empty() || fragiles.empty() || chemicals.empty()) return;
+void demonstrateInheritedSetter(Collection<PerishableProduct>& perishables,
+    Collection<FragileProduct>& fragiles,
+    Collection<ChemicalProduct>& chemicals) {
+    if (perishables.isEmpty() || fragiles.isEmpty() || chemicals.isEmpty()) return;
 
     std::cout << "\n======================================================\n"
         << "      АКТУАЛИЗАЦИЯ И РЕВИЗИЯ УЧЕТНЫХ ХАРАКТЕРИСТИК    \n"
@@ -345,24 +351,25 @@ void demonstrateInheritedSetter(std::vector<PerishableProduct>& perishables,
     std::cout << "======================================================\n";
 }
 
-void demonstrateInheritedGetter(const std::vector<PerishableProduct>& perishables,
-    const std::vector<FragileProduct>& fragiles,
-    const std::vector<ChemicalProduct>& chemicals) {
+void demonstrateInheritedGetter(const Collection<PerishableProduct>& perishables,
+    const Collection<FragileProduct>& fragiles,
+    const Collection<ChemicalProduct>& chemicals) {
     std::cout << "\n======================================================\n"
         << "           СВЕРКА НОМЕНКЛАТУРНЫХ АРТИКУЛОВ             \n"
         << "======================================================\n";
 
-    for (const auto& p : perishables) {
-        std::cout << p.getName() << " -> Учетный номер: " << p.getSku() << "\n";
+    for (size_t i = 0; i < perishables.getSize(); ++i) {
+        std::cout << perishables[i].getName() << " -> Артикул: " << perishables[i].getSku() << "\n";
     }
-    for (const auto& f : fragiles) {
-        std::cout << f.getName() << " -> Учетный номер: " << f.getSku() << "\n";
+    for (size_t i = 0; i < fragiles.getSize(); ++i) {
+        std::cout << fragiles[i].getName() << " -> Артикул: " << fragiles[i].getSku() << "\n";
     }
-    for (const auto& c : chemicals) {
-        std::cout << c.getName() << " -> Учетный номер: " << c.getSku() << "\n";
+    for (size_t i = 0; i < chemicals.getSize(); ++i) {
+        std::cout << chemicals[i].getName() << " -> Артикул: " << chemicals[i].getSku() << "\n";
     }
     std::cout << "======================================================\n";
 }
+
 void demonstrateTemplateCollections() {
     std::cout << "\n======================================================\n"
         << "     СВОДНЫЙ АУДИТ И СЕЛЕКЦИЯ СКЛАДСКИХ РЕЕСТРОВ      \n"
@@ -396,7 +403,7 @@ void demonstrateTemplateCollections() {
 
     std::cout << "\n5. Автоподбор зоны под тяжеловесный груз (лимит несущей способности от 1000 кг):\n";
     if (const auto* matchedZone = findFirstMatch(zoneCollection, [](const StorageZone& z) {
-            return z.getMaxWeight() >= 1000.0;
+        return z.getMaxWeight() >= 1000.0;
         }); matchedZone != nullptr) {
         std::cout << "Назначена зона: " << matchedZone->getName() << " (Лимит: " << matchedZone->getMaxWeight() << " кг)\n";
     }
@@ -405,4 +412,5 @@ void demonstrateTemplateCollections() {
     if (zoneCollection.removeAt(2)) {
         std::cout << "Стеллаж списан на обслуживание. Активных зон в реестре: " << zoneCollection.getSize() << "\n";
     }
+    std::cout << "======================================================\n";
 }

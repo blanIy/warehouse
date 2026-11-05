@@ -52,3 +52,10 @@ public:
 
     friend double calculateDensity(const Product& product);
 };
+
+inline std::ostream& operator<<(std::ostream& os, const std::shared_ptr<Product>& product) {
+    if (product != nullptr) {
+        os << *product;
+    }
+    return os;
+}

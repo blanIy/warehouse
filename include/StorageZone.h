@@ -1,7 +1,7 @@
 #pragma once
 #include "Product.h"
+#include "Collection.h"
 #include <string>
-#include <vector>
 #include <memory>
 #include <string_view>
 #include <iostream>
@@ -13,7 +13,7 @@ private:
     double maxVolume = 0.0;
     double currentWeight = 0.0;
     double currentVolume = 0.0;
-    std::vector<std::unique_ptr<Product>> products;
+    Collection<std::shared_ptr<Product>> products;
 
 public:
     StorageZone(std::string_view name, double maxWeight, double maxVolume);
@@ -47,8 +47,8 @@ public:
         os << "--- " << zone.name << " ---\n"
             << "Загрузка по массе: " << zone.currentWeight << " / " << zone.maxWeight << " кг\n"
             << "Загрузка по объему: " << zone.currentVolume << " / " << zone.maxVolume << " м3\n"
-            << "Товаров в зоне: " << zone.products.size() << "\n";
-        if (zone.products.empty()) {
+            << "Товаров в зоне: " << zone.products.getSize() << "\n";
+        if (zone.products.isEmpty()) {
             os << "  (Зона свободна)\n";
         }
         else {

@@ -1,13 +1,13 @@
 #pragma once
 #include "StorageZone.h"
+#include "Collection.h"
 #include <string>
-#include <vector>
 #include <string_view>
 
 class Warehouse {
 private:
     std::string name;
-    std::vector<StorageZone> zones;
+    Collection<StorageZone> zones;
 
 public:
     explicit Warehouse(std::string_view name);

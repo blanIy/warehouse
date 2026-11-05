@@ -1,7 +1,5 @@
 #include "WarehouseUI.h"
-#include "StandardProduct.h"
 #include <iostream>
-#include <vector>
 #include <memory>
 #include <clocale>
 
@@ -21,24 +19,30 @@ int main() {
     warehouse.addZone(StorageZone("Зона А (Крупногабарит)", 4000.0, 60.0));
     warehouse.addZone(StorageZone("Зона B (Спецхранение)", 800.0, 15.0));
 
-    std::vector<PerishableProduct> perishables;
-    perishables.emplace_back("SKU-PER-01", "Молоко_Пастеризованное", "Продукты", 1.2, 0.001, "25.10.2026", 4.0);
-    perishables.emplace_back("SKU-PER-02", "Йогурт_Натуральный", "Продукты", 0.5, 0.0005, "15.11.2026", 2.0);
+    Collection<PerishableProduct> perishables;
+    perishables.add(PerishableProduct("SKU-PER-01", "Молоко_Пастеризованное", "Продукты", 1.2, 0.001, "25.10.2026", 4.0));
+    perishables.add(PerishableProduct("SKU-PER-02", "Йогурт_Натуральный", "Продукты", 0.5, 0.0005, "15.11.2026", 2.0));
 
-    std::vector<FragileProduct> fragiles;
-    fragiles.emplace_back("SKU-FRG-01", "Зеркало_Настенное", "Интерьер", 6.0, 0.04, 2, "Пенопластовый_короб");
-    fragiles.emplace_back("SKU-FRG-02", "Ваза_Хрустальная", "Посуда", 2.5, 0.015, 1, "Воздушно-пузырьковая_пленка");
+    Collection<FragileProduct> fragiles;
+    fragiles.add(FragileProduct("SKU-FRG-01", "Зеркало_Настенное", "Интерьер", 6.0, 0.04, 2, "Пенопластовый_короб"));
+    fragiles.add(FragileProduct("SKU-FRG-02", "Ваза_Хрустальная", "Посуда", 2.5, 0.015, 1, "Воздушно-пузырьковая_пленка"));
 
-    std::vector<ChemicalProduct> chemicals;
-    chemicals.emplace_back("SKU-CHM-01", "Серная_Кислота_ХЧ", "Химреагенты", 30.0, 0.02, "Класс_8_Едкие", true);
-    chemicals.emplace_back("SKU-CHM-02", "Растворитель_Органический", "Растворители", 18.0, 0.025, "Класс_3_Огнеопасно", true);
+    Collection<ChemicalProduct> chemicals;
+    chemicals.add(ChemicalProduct("SKU-CHM-01", "Серная_Кислота_ХЧ", "Химреагенты", 30.0, 0.02, "Класс_8_Едкие", true));
+    chemicals.add(ChemicalProduct("SKU-CHM-02", "Растворитель_Органический", "Растворители", 18.0, 0.025, "Класс_3_Огнеопасно", true));
 
-    std::vector<std::unique_ptr<Product>> catalog;
-    for (const auto& item : perishables) catalog.push_back(item.clone());
-    for (const auto& item : fragiles) catalog.push_back(item.clone());
-    for (const auto& item : chemicals) catalog.push_back(item.clone());
-    catalog.push_back(std::make_unique<StandardProduct>("SKU-STD-01", "Холодильник_Атлант", "Бытовая_техника", 70.0, 1.2, "Заводская_коробка"));
-    catalog.push_back(std::make_unique<StandardProduct>("SKU-STD-02", "Станок_промышленный", "Оборудование", 1800.0, 25.0, "Деревянный_поддон"));
+    Collection<std::shared_ptr<Product>> catalog;
+    for (size_t i = 0; i < perishables.getSize(); ++i) {
+        catalog.add(std::make_shared<PerishableProduct>(perishables[i]));
+    }
+    for (size_t i = 0; i < fragiles.getSize(); ++i) {
+        catalog.add(std::make_shared<FragileProduct>(fragiles[i]));
+    }
+    for (size_t i = 0; i < chemicals.getSize(); ++i) {
+        catalog.add(std::make_shared<ChemicalProduct>(chemicals[i]));
+    }
+    catalog.add(std::make_shared<StandardProduct>("SKU-STD-01", "Холодильник_Атлант", "Бытовая_техника", 70.0, 1.2, "Заводская_коробка"));
+    catalog.add(std::make_shared<StandardProduct>("SKU-STD-02", "Станок_промышленный", "Оборудование", 1800.0, 25.0, "Деревянный_поддон"));
 
     if (auto* zoneB = warehouse.getZone(1); zoneB != nullptr) {
         *zoneB += perishables[0];

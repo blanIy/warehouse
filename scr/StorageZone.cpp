@@ -8,9 +8,9 @@ StorageZone::StorageZone(std::string_view name, double maxWeight, double maxVolu
 StorageZone::StorageZone(const StorageZone& other)
     : name(other.name), maxWeight(other.maxWeight), maxVolume(other.maxVolume),
     currentWeight(other.currentWeight), currentVolume(other.currentVolume) {
-    for (const auto& p : other.products) {
-        if (p != nullptr) {
-            products.push_back(p->clone());
+    for (size_t i = 0; i < other.products.getSize(); ++i) {
+        if (other.products[i] != nullptr) {
+            products.add(other.products[i]->clone());
         }
     }
 }
@@ -25,9 +25,9 @@ StorageZone& StorageZone::operator=(const StorageZone& other) {
     currentWeight = other.currentWeight;
     currentVolume = other.currentVolume;
     products.clear();
-    for (const auto& p : other.products) {
-        if (p != nullptr) {
-            products.push_back(p->clone());
+    for (size_t i = 0; i < other.products.getSize(); ++i) {
+        if (other.products[i] != nullptr) {
+            products.add(other.products[i]->clone());
         }
     }
     return *this;
@@ -42,17 +42,17 @@ double StorageZone::getMaxWeight() const { return maxWeight; }
 double StorageZone::getMaxVolume() const { return maxVolume; }
 double StorageZone::getCurrentWeight() const { return currentWeight; }
 double StorageZone::getCurrentVolume() const { return currentVolume; }
-int StorageZone::getProductCount() const { return static_cast<int>(products.size()); }
+int StorageZone::getProductCount() const { return static_cast<int>(products.getSize()); }
 
 const Product* StorageZone::getProduct(int index) const {
-    if (index >= 0 && index < static_cast<int>(products.size())) {
+    if (index >= 0 && static_cast<size_t>(index) < products.getSize()) {
         return products[static_cast<size_t>(index)].get();
     }
     return nullptr;
 }
 
 Product* StorageZone::getProduct(int index) {
-    if (index >= 0 && index < static_cast<int>(products.size())) {
+    if (index >= 0 && static_cast<size_t>(index) < products.getSize()) {
         return products[static_cast<size_t>(index)].get();
     }
     return nullptr;
@@ -67,18 +67,18 @@ bool StorageZone::addProduct(const Product& product) {
     if (!canAccommodate(product)) {
         return false;
     }
-    products.push_back(product.clone());
+    products.add(product.clone());
     currentWeight += product.getWeight();
     currentVolume += product.getVolume();
     return true;
 }
 
 bool StorageZone::removeProduct(std::string_view sku) {
-    for (auto it = products.begin(); it != products.end(); ++it) {
-        if ((*it)->getSku() == sku) {
-            currentWeight -= (*it)->getWeight();
-            currentVolume -= (*it)->getVolume();
-            products.erase(it);
+    for (size_t i = 0; i < products.getSize(); ++i) {
+        if (products[i]->getSku() == sku) {
+            currentWeight -= products[i]->getWeight();
+            currentVolume -= products[i]->getVolume();
+            products.removeAt(i);
             return true;
         }
     }

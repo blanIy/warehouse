@@ -3,6 +3,7 @@
 #include <iostream>
 #include <utility>
 #include <cstddef>
+
 template<typename T>
 class Collection {
 private:
@@ -12,8 +13,8 @@ public:
     Collection() = default;
     Collection(const Collection&) = default;
     Collection& operator=(const Collection&) = default;
-    Collection(Collection&&) noexcept = default;
-    Collection& operator=(Collection&&) noexcept = default;
+    Collection(Collection&&) = default;
+    Collection& operator=(Collection&&) = default;
     ~Collection() = default;
 
     void add(const T& item);
@@ -29,6 +30,11 @@ public:
     bool isEmpty() const;
     void clear();
     void print() const;
+
+    auto begin() { return items.begin(); }
+    auto end() { return items.end(); }
+    auto begin() const { return items.begin(); }
+    auto end() const { return items.end(); }
 };
 
 template<typename T, typename Predicate>

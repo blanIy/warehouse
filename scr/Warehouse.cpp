@@ -6,29 +6,29 @@ Warehouse::Warehouse(std::string_view name) : name(name) {}
 std::string Warehouse::getName() const { return name; }
 
 void Warehouse::addZone(const StorageZone& zone) {
-    zones.push_back(zone);
+    zones.add(zone);
 }
 
 int Warehouse::getZoneCount() const {
-    return static_cast<int>(zones.size());
+    return static_cast<int>(zones.getSize());
 }
 
 const StorageZone* Warehouse::getZone(int index) const {
-    if (index >= 0 && index < static_cast<int>(zones.size())) {
+    if (index >= 0 && static_cast<size_t>(index) < zones.getSize()) {
         return &zones[static_cast<size_t>(index)];
     }
     return nullptr;
 }
 
 StorageZone* Warehouse::getZone(int index) {
-    if (index >= 0 && index < static_cast<int>(zones.size())) {
+    if (index >= 0 && static_cast<size_t>(index) < zones.getSize()) {
         return &zones[static_cast<size_t>(index)];
     }
     return nullptr;
 }
 
 bool Warehouse::placeProduct(int zoneIndex, const Product& product) {
-    if (zoneIndex >= 0 && zoneIndex < static_cast<int>(zones.size())) {
+    if (zoneIndex >= 0 && static_cast<size_t>(zoneIndex) < zones.getSize()) {
         return zones[static_cast<size_t>(zoneIndex)].addProduct(product);
     }
     return false;
@@ -47,7 +47,7 @@ void Warehouse::showInventory() const {
     std::cout << "\n========================================\n"
         << "     ÑÎÑÒÎßÍÈÅ ÑÊËÀÄÀ: \"" << name << "\"\n"
         << "========================================\n";
-    if (zones.empty()) {
+    if (zones.isEmpty()) {
         std::cout << "Íà ñêëàäå íåò çîí õðàíåíèÿ.\n";
         return;
     }
