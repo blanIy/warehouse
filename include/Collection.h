@@ -13,8 +13,8 @@ public:
     Collection() = default;
     Collection(const Collection&) = default;
     Collection& operator=(const Collection&) = default;
-    Collection(Collection&&) = default;
-    Collection& operator=(Collection&&) = default;
+    Collection(Collection&&) noexcept = default;
+    Collection& operator=(Collection&&) noexcept = default;
     ~Collection() = default;
 
     void add(const T& item);
@@ -24,23 +24,4 @@ public:
     T& get(size_t index);
     const T& get(size_t index) const;
     T& operator[](size_t index);
-    const T& operator[](size_t index) const;
-    int find(const T& item) const;
-    size_t getSize() const;
-    bool isEmpty() const;
-    void clear();
-    void print() const;
-
-    auto begin() { return items.begin(); }
-    auto end() { return items.end(); }
-    auto begin() const { return items.begin(); }
-    auto end() const { return items.end(); }
-};
-
-template<typename T, typename Predicate>
-Collection<T> filterCollection(const Collection<T>& collection, Predicate pred);
-
-template<typename T, typename Predicate>
-const T* findFirstMatch(const Collection<T>& collection, Predicate pred);
-
-#include "Collection.tpp"
+    const T& operator[](size_t
