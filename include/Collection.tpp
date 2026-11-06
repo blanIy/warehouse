@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Collection.h"
 template<typename T>
 void Collection<T>::add(const T& item) {
     items.push_back(item);
