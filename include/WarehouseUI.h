@@ -29,3 +29,5 @@ void demonstrateInheritedGetter(const Collection<PerishableProduct>& perishables
     const Collection<ChemicalProduct>& chemicals);
 void demonstratePolymorphicReporting(const Collection<std::shared_ptr<Product>>& catalog);
 void demonstrateTemplateCollections();
+void handleExceptionsMenu(Warehouse& warehouse, const Collection<std::shared_ptr<Product>>& catalog);
+void printExceptionsMenu();

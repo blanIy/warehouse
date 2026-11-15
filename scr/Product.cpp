@@ -1,4 +1,5 @@
 #include "Product.h"
+#include "InvalidDataException.h"
 
 Product::Product(std::string_view sku, std::string_view name, std::string_view category, double weight, double volume)
     : sku(sku), name(name), category(category), weight(weight), volume(volume) {
@@ -23,15 +24,17 @@ void Product::setCategory(std::string_view newCategory) {
 }
 
 void Product::setWeight(double newWeight) {
-    if (newWeight > 0.0) {
-        weight = newWeight;
+    if (newWeight <= 0.0) {
+        throw InvalidDataException("масса должна быть строго положительной", "weight");
     }
+    weight = newWeight;
 }
 
 void Product::setVolume(double newVolume) {
-    if (newVolume > 0.0) {
-        volume = newVolume;
+    if (newVolume <= 0.0) {
+        throw InvalidDataException("объем должен быть строго положительным", "volume");
     }
+    volume = newVolume;
 }
 
 bool Product::operator==(const Product& other) const {

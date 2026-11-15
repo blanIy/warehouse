@@ -1,5 +1,6 @@
 #pragma once
 #include "Collection.h"
+#include "OutOfRangeException.h"
 template<typename T>
 void Collection<T>::add(const T& item) {
     items.push_back(item);
@@ -23,21 +24,27 @@ bool Collection<T>::remove(const T& item) {
 
 template<typename T>
 bool Collection<T>::removeAt(size_t index) {
-    if (index < items.size()) {
-        items.erase(items.begin() + index);
-        return true;
+    if (index >= items.size()) {
+        throw OutOfRangeException("удаление по недопустимому индексу", index, items.size());
     }
-    return false;
+    items.erase(items.begin() + static_cast<std::ptrdiff_t>(index));
+    return true;
 }
 
 template<typename T>
 T& Collection<T>::get(size_t index) {
-    return items.at(index);
+    if (index >= items.size()) {
+        throw OutOfRangeException("чтение элемента по недопустимому индексу", index, items.size());
+    }
+    return items[index];
 }
 
 template<typename T>
 const T& Collection<T>::get(size_t index) const {
-    return items.at(index);
+    if (index >= items.size()) {
+        throw OutOfRangeException("константное чтение элемента по недопустимому индексу", index, items.size());
+    }
+    return items[index];
 }
 
 template<typename T>

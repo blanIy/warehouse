@@ -1,6 +1,7 @@
 #include "StorageZone.h"
 #include <iostream>
-
+#include "LimitExceededException.h"
+#include "ObjectNotFoundException.h"
 StorageZone::StorageZone(std::string_view name, double maxWeight, double maxVolume)
     : name(name), maxWeight(maxWeight), maxVolume(maxVolume) {
 }
@@ -64,8 +65,11 @@ bool StorageZone::canAccommodate(const Product& product) const {
 }
 
 bool StorageZone::addProduct(const Product& product) {
-    if (!canAccommodate(product)) {
-        return false;
+    if (currentWeight + product.getWeight() > maxWeight) {
+        throw LimitExceededException("превышена грузоподъемность зоны", currentWeight + product.getWeight(), maxWeight);
+    }
+    if (currentVolume + product.getVolume() > maxVolume) {
+        throw LimitExceededException("превышен полезный объем зоны", currentVolume + product.getVolume(), maxVolume);
     }
     products.add(product.clone());
     currentWeight += product.getWeight();
@@ -82,7 +86,7 @@ bool StorageZone::removeProduct(std::string_view sku) {
             return true;
         }
     }
-    return false;
+    throw ObjectNotFoundException("груз с указанным артикулом отсутствует в зоне", sku);
 }
 
 StorageZone& StorageZone::operator+=(const Product& product) {

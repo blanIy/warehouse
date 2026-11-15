@@ -93,6 +93,9 @@ int main() {
         case 11:
             demonstrateTemplateCollections();
             break;
+        case 12:
+            handleExceptionsMenu(warehouse, catalog);
+            break;
         case 0:
             std::cout << "Смена завершена. База данных склада сохранена.\n";
             break;

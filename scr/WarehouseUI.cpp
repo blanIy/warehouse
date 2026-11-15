@@ -1,6 +1,13 @@
 #include "WarehouseUI.h"
 #include <iostream>
 #include <utility>
+#include "LimitExceededException.h"
+#include "ObjectNotFoundException.h"
+#include "DuplicateIdException.h"
+#include "OutOfRangeException.h"
+#include "InvalidDataException.h"
+#include "InvalidOperationException.h"
+#include "RelationException.h"
 
 void printMenu() {
     std::cout << "\n======================================================\n"
@@ -17,6 +24,7 @@ void printMenu() {
         << "9. Контрольная сверка учетных артикулов\n"
         << "10. Комплексный аудит и печать паспортов всех грузов\n"
         << "11. Сводный аудит и селекция складских реестров\n"
+        << "12. Регламентный стресс-тест отказоустойчивости и исключений\n"
         << "0. Завершить смену\n"
         << "======================================================\n"
         << "Выберите действие: ";
@@ -413,4 +421,142 @@ void demonstrateTemplateCollections() {
         std::cout << "Стеллаж списан на обслуживание. Активных зон в реестре: " << zoneCollection.getSize() << "\n";
     }
     std::cout << "======================================================\n";
+}
+
+void printExceptionsMenu() {
+    std::cout << "\n======================================================\n"
+        << "       РЕВИЗИЯ РЕГЛАМЕНТОВ И НЕШТАТНЫХ СИТУАЦИЙ       \n"
+        << "======================================================\n"
+        << "1. Ввод некорректных физических параметров груза\n"
+        << "2. Превышение лимита грузоподъемности зоны хранения\n"
+        << "3. Регистрация груза с дублирующимся идентификатором\n"
+        << "4. Списание отсутствующего груза по артикулу\n"
+        << "5. Адресация зоны хранения по недопустимому индексу\n"
+        << "6. Выполнение недопустимой технологической операции\n"
+        << "7. Ликвидация зоны с привязанными материальными ценностями\n"
+        << "0. Возврат в главное меню\n"
+        << "======================================================\n"
+        << "Выберите пункт меню: ";
+}
+
+void handleExceptionsMenu(Warehouse& warehouse, const Collection<std::shared_ptr<Product>>& catalog) {
+    int subChoice = -1;
+    while (subChoice != 0) {
+        printExceptionsMenu();
+        if (!(std::cin >> subChoice)) {
+            std::cin.clear();
+            std::cin.ignore(10000, '\n');
+            continue;
+        }
+
+        switch (subChoice) {
+        case 1: {
+            std::cout << "Введите массу груза (кг): ";
+            double weight = 0.0;
+            std::cin >> weight;
+            try {
+                StandardProduct prod("SKU-TMP", "Тестовый_груз", "Категория", 10.0, 0.5);
+                prod.setWeight(weight);
+            }
+            catch (const InvalidDataException& ex) {
+                std::cout << ex.what() << "\n";
+            }
+            break;
+        }
+        case 2: {
+            std::cout << "Лимит зоны B составляет 800.00 кг.\n";
+            std::cout << "Введите массу размещаемой партии (кг): ";
+            double weight = 0.0;
+            std::cin >> weight;
+            try {
+                StandardProduct prod("SKU-TMP", "Тяжелая_партия", "Сырье", weight, 1.0);
+                auto* zone = warehouse.getZone(1);
+                zone->addProduct(prod);
+            }
+            catch (const LimitExceededException& ex) {
+                std::cout << ex.what() << "\n";
+            }
+            break;
+        }
+        case 3: {
+            std::cout << "Введите артикул для регистрации: ";
+            std::string sku;
+            std::cin >> sku;
+            try {
+                for (size_t i = 0; i < catalog.getSize(); ++i) {
+                    if (catalog[i]->getSku() == sku) {
+                        throw DuplicateIdException("груз с данным артикулом уже зарегистрирован", sku);
+                    }
+                }
+                std::cout << "Артикул свободен для регистрации.\n";
+            }
+            catch (const DuplicateIdException& ex) {
+                std::cout << ex.what() << "\n";
+            }
+            break;
+        }
+        case 4: {
+            std::cout << "Введите артикул груза для списания: ";
+            std::string sku;
+            std::cin >> sku;
+            try {
+                warehouse.issueProduct(sku);
+            }
+            catch (const ObjectNotFoundException& ex) {
+                std::cout << ex.what() << "\n";
+            }
+            break;
+        }
+        case 5: {
+            std::cout << "Всего доступно зон: " << warehouse.getZoneCount() << "\n";
+            std::cout << "Введите индекс зоны для инспекции: ";
+            int index = 0;
+            std::cin >> index;
+            try {
+                warehouse.getZone(index);
+            }
+            catch (const OutOfRangeException& ex) {
+                std::cout << ex.what() << "\n";
+            }
+            break;
+        }
+        case 6: {
+            std::cout << "Введите код запрашиваемой регламентной операции: ";
+            int opCode = 0;
+            std::cin >> opCode;
+            try {
+                if (opCode != 1) {
+                    throw InvalidOperationException("прямое изменение класса ADR для взрывоопасных веществ запрещено", "reclassifyHazard");
+                }
+            }
+            catch (const InvalidOperationException& ex) {
+                std::cout << ex.what() << "\n";
+            }
+            break;
+        }
+        case 7: {
+            std::cout << "Введите индекс зоны для ликвидации: ";
+            int zoneIdx = 0;
+            std::cin >> zoneIdx;
+            try {
+                const auto* zone = warehouse.getZone(zoneIdx);
+                if (zone->getProductCount() > 0) {
+                    throw RelationException("нельзя удалить зону хранения, в ней находятся материальные ценности", zone->getName());
+                }
+            }
+            catch (const RelationException& ex) {
+                std::cout << ex.what() << "\n";
+            }
+            catch (const WarehouseException& ex) {
+                std::cout << ex.what() << "\n";
+            }
+            break;
+        }
+        case 0:
+            break;
+        default:
+            std::cout << "Неверный пункт подменю!\n";
+            break;
+        }
+    }
 }
