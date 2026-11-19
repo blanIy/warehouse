@@ -21,39 +21,31 @@
   <ItemGroup>
     <ClInclude Include="include\ChemicalProduct.h" />
     <ClInclude Include="include\Collection.h" />
-    <ClInclude Include="include\DuplicateIdException.h" />
+    <ClInclude Include="include\exceptions\DuplicateIdException.h" />
+    <ClInclude Include="include\exceptions\InvalidDataException.h" />
+    <ClInclude Include="include\exceptions\InvalidOperationException.h" />
+    <ClInclude Include="include\exceptions\LimitExceededException.h" />
+    <ClInclude Include="include\exceptions\ObjectNotFoundException.h" />
+    <ClInclude Include="include\exceptions\OutOfRangeException.h" />
+    <ClInclude Include="include\exceptions\RelationException.h" />
+    <ClInclude Include="include\exceptions\WarehouseException.h" />
     <ClInclude Include="include\FragileProduct.h" />
-    <ClInclude Include="include\InvalidDataException.h" />
-    <ClInclude Include="include\InvalidOperationException.h" />
-    <ClInclude Include="include\LimitExceededException.h" />
-    <ClInclude Include="include\ObjectNotFoundException.h" />
-    <ClInclude Include="include\OutOfRangeException.h" />
     <ClInclude Include="include\PerishableProduct.h" />
     <ClInclude Include="include\Product.h" />
-    <ClInclude Include="include\RelationException.h" />
     <ClInclude Include="include\StandardProduct.h" />
     <ClInclude Include="include\StorageZone.h" />
     <ClInclude Include="include\Warehouse.h" />
-    <ClInclude Include="include\WarehouseException.h" />
     <ClInclude Include="include\WarehouseUI.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\ChemicalProduct.cpp" />
-    <ClCompile Include="scr\DuplicateIdException.cpp" />
     <ClCompile Include="scr\FragileProduct.cpp" />
-    <ClCompile Include="scr\InvalidDataException.cpp" />
-    <ClCompile Include="scr\InvalidOperationException.cpp" />
-    <ClCompile Include="scr\LimitExceededException.cpp" />
     <ClCompile Include="scr\main.cpp" />
-    <ClCompile Include="scr\ObjectNotFoundException.cpp" />
-    <ClCompile Include="scr\OutOfRangeException.cpp" />
     <ClCompile Include="scr\PerishableProduct.cpp" />
     <ClCompile Include="scr\Product.cpp" />
-    <ClCompile Include="scr\RelationException.cpp" />
     <ClCompile Include="scr\StandardProduct.cpp" />
     <ClCompile Include="scr\StorageZone.cpp" />
     <ClCompile Include="scr\Warehouse.cpp" />
-    <ClCompile Include="scr\WarehouseException.cpp" />
     <ClCompile Include="scr\WarehouseUI.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -144,7 +136,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include\exceptions;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,7 +152,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)include;$(ProjectDir)include\exceptions;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

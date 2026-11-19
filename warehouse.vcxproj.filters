@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы заголовков\exceptions">
+      <UniqueIdentifier>{a0c7bc55-a650-4034-a29c-d982e12262d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Product.h">
@@ -42,29 +45,29 @@
     <ClInclude Include="include\Collection.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="include\DuplicateIdException.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="include\exceptions\DuplicateIdException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="include\InvalidDataException.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="include\exceptions\InvalidDataException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="include\InvalidOperationException.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="include\exceptions\InvalidOperationException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="include\LimitExceededException.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="include\exceptions\LimitExceededException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="include\ObjectNotFoundException.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="include\exceptions\ObjectNotFoundException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="include\OutOfRangeException.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="include\exceptions\OutOfRangeException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="include\WarehouseException.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="include\exceptions\RelationException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
-    <ClInclude Include="include\RelationException.h">
-      <Filter>Файлы заголовков</Filter>
+    <ClInclude Include="include\exceptions\WarehouseException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -93,30 +96,6 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="scr\StandardProduct.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\DuplicateIdException.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\InvalidDataException.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\InvalidOperationException.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\LimitExceededException.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\ObjectNotFoundException.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\OutOfRangeException.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\WarehouseException.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="scr\RelationException.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
