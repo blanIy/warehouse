@@ -31,3 +31,7 @@ void demonstratePolymorphicReporting(const Collection<std::shared_ptr<Product>>&
 void demonstrateTemplateCollections();
 void handleExceptionsMenu(Warehouse& warehouse, const Collection<std::shared_ptr<Product>>& catalog);
 void printExceptionsMenu();
+void handleSaveState(const Warehouse& warehouse);
+void handleLoadState(Warehouse& warehouse);
+void handleGenerateReport(const Warehouse& warehouse);
+void handleShowJournal();

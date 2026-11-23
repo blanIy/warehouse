@@ -69,6 +69,24 @@
     <ClInclude Include="include\exceptions\WarehouseException.h">
       <Filter>Файлы заголовков\exceptions</Filter>
     </ClInclude>
+    <ClInclude Include="include\exceptions\FileOpenException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="include\exceptions\FileReadException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="include\exceptions\FileWriteException.h">
+      <Filter>Файлы заголовков\exceptions</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FileStorage.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Logger.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ReportWriter.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\main.cpp">
@@ -96,6 +114,15 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="scr\StandardProduct.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="scr\Logger.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="scr\ReportWriter.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="scr\FileStorage.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

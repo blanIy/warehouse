@@ -22,6 +22,9 @@
     <ClInclude Include="include\ChemicalProduct.h" />
     <ClInclude Include="include\Collection.h" />
     <ClInclude Include="include\exceptions\DuplicateIdException.h" />
+    <ClInclude Include="include\exceptions\FileOpenException.h" />
+    <ClInclude Include="include\exceptions\FileReadException.h" />
+    <ClInclude Include="include\exceptions\FileWriteException.h" />
     <ClInclude Include="include\exceptions\InvalidDataException.h" />
     <ClInclude Include="include\exceptions\InvalidOperationException.h" />
     <ClInclude Include="include\exceptions\LimitExceededException.h" />
@@ -29,9 +32,12 @@
     <ClInclude Include="include\exceptions\OutOfRangeException.h" />
     <ClInclude Include="include\exceptions\RelationException.h" />
     <ClInclude Include="include\exceptions\WarehouseException.h" />
+    <ClInclude Include="include\FileStorage.h" />
     <ClInclude Include="include\FragileProduct.h" />
+    <ClInclude Include="include\Logger.h" />
     <ClInclude Include="include\PerishableProduct.h" />
     <ClInclude Include="include\Product.h" />
+    <ClInclude Include="include\ReportWriter.h" />
     <ClInclude Include="include\StandardProduct.h" />
     <ClInclude Include="include\StorageZone.h" />
     <ClInclude Include="include\Warehouse.h" />
@@ -39,10 +45,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="scr\ChemicalProduct.cpp" />
+    <ClCompile Include="scr\FileStorage.cpp" />
     <ClCompile Include="scr\FragileProduct.cpp" />
+    <ClCompile Include="scr\Logger.cpp" />
     <ClCompile Include="scr\main.cpp" />
     <ClCompile Include="scr\PerishableProduct.cpp" />
     <ClCompile Include="scr\Product.cpp" />
+    <ClCompile Include="scr\ReportWriter.cpp" />
     <ClCompile Include="scr\StandardProduct.cpp" />
     <ClCompile Include="scr\StorageZone.cpp" />
     <ClCompile Include="scr\Warehouse.cpp" />

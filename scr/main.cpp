@@ -96,6 +96,18 @@ int main() {
         case 12:
             handleExceptionsMenu(warehouse, catalog);
             break;
+        case 13:
+            handleSaveState(warehouse);
+            break;
+        case 14:
+            handleLoadState(warehouse);
+            break;
+        case 15:
+            handleGenerateReport(warehouse);
+            break;
+        case 16:
+            handleShowJournal();
+            break;
         case 0:
             std::cout << "Смена завершена. База данных склада сохранена.\n";
             break;
