@@ -11,6 +11,7 @@
 #include "FileStorage.h"
 #include "Logger.h"
 #include "ReportWriter.h"
+#include "WarehouseException.h"
 namespace {
     const std::string STATE_FILE_PATH = "data/warehouse_state.txt";
     const std::string LOG_FILE_PATH = "data/warehouse.log";
@@ -589,7 +590,8 @@ void handleSaveState(const Warehouse& warehouse) {
         Logger::append(LOG_FILE_PATH, "Состояние склада сохранено в файл: " + STATE_FILE_PATH);
         std::cout << "Состояние склада успешно сохранено в файл \"" << STATE_FILE_PATH << "\".\n";
     }
-    catch (const std::exception& e) {
+    catch (const WarehouseException& e)
+    {
         Logger::append(LOG_FILE_PATH, std::string("ОШИБКА сохранения состояния: ") + e.what());
         std::cerr << "Ошибка сохранения состояния: " << e.what() << "\n";
     }
@@ -601,7 +603,7 @@ void handleLoadState(Warehouse& warehouse) {
         Logger::append(LOG_FILE_PATH, "Выполнена загрузка и слияние данных из файла: " + STATE_FILE_PATH);
         std::cout << "Данные из файла \"" << STATE_FILE_PATH << "\" успешно загружены и объединены с текущим складом.\n";
     }
-    catch (const std::exception& e) {
+    catch (const WarehouseException& e){
         Logger::append(LOG_FILE_PATH, std::string("ОШИБКА загрузки состояния: ") + e.what());
         std::cerr << "Ошибка загрузки состояния: " << e.what() << "\n";
     }   
@@ -613,7 +615,7 @@ void handleGenerateReport(const Warehouse& warehouse) {
         Logger::append(LOG_FILE_PATH, "Сформирован текстовый отчет: " + REPORT_FILE_PATH);
         std::cout << "Текстовый отчет успешно сформирован: \"" << REPORT_FILE_PATH << "\".\n";
     }
-    catch (const std::exception& e) {
+    catch (const WarehouseException& e) {
         Logger::append(LOG_FILE_PATH, std::string("ОШИБКА формирования отчета: ") + e.what());
         std::cerr << "Ошибка формирования отчета: " << e.what() << "\n";
     }
@@ -631,7 +633,7 @@ void handleShowJournal() {
         }
         std::cout << "==========================================\n";
     }
-    catch (const std::exception& e) {
+    catch (const WarehouseException& e) {
         std::cerr << "Ошибка чтения журнала: " << e.what() << "\n";
     }
 }
