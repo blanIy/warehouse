@@ -169,7 +169,86 @@ namespace {
         }
         return false;
     }
+    bool parseAndMergeStream(std::istream& in, Warehouse& warehouse) {
+        std::string line;
+        if (!std::getline(in, line)) {
+            throw FileReadException("Файл состояния пуст или поврежден.");
+        }
 
+        const auto headerTokens = splitLine(line, ';');
+        if (headerTokens.size() != 2 || headerTokens[0] != MAGIC_HEADER) {
+            throw InvalidDataException("Некорректный заголовок файла состояния.");
+        }
+
+        const int expectedRecords = parseInt(headerTokens[1], "количество записей");
+        if (expectedRecords < 0) {
+            throw InvalidDataException("Количество записей не может быть отрицательным.");
+        }
+
+        std::set<std::string> fileSkus;
+        bool endReached = false;
+        bool hasDuplicates = false;
+        int actualRecords = 0;
+
+        while (std::getline(in, line)) {
+            if (line.empty()) {
+                continue;
+            }
+            if (endReached) {
+                throw InvalidDataException("Обнаружены лишние данные после метки END.");
+            }
+
+            const auto tokens = splitLine(line, ';');
+            if (tokens[0] == "END") {
+                endReached = true;
+                continue;
+            }
+
+            if (tokens[0] == "ZONE") {
+                if (tokens.size() != 4) {
+                    throw InvalidDataException("Неверный формат записи зоны.");
+                }
+                const std::string& zoneName = tokens[1];
+                const double maxW = parseDouble(tokens[2], "максимальная масса зоны");
+                const double maxV = parseDouble(tokens[3], "максимальный объем зоны");
+                if (findZoneIndex(warehouse, zoneName) == -1) {
+                    warehouse.addZone(StorageZone(zoneName, maxW, maxV));
+                }
+                ++actualRecords;
+            }
+            else if (tokens[0] == "PRODUCT") {
+                const auto product = buildProduct(tokens);
+                const std::string& zoneName = tokens[2];
+                const int zoneIdx = findZoneIndex(warehouse, zoneName);
+                if (zoneIdx == -1) {
+                    throw RelationException("Зона хранения не найдена для товара: " + zoneName);
+                }
+                ++actualRecords;
+                if (!fileSkus.insert(product->getSku()).second) {
+                    hasDuplicates = true;
+                    continue;
+                }
+                if (!hasProductSku(warehouse, product->getSku())) {
+                    warehouse.placeProduct(zoneIdx, *product);
+                }
+            }
+            else {
+                throw InvalidDataException("Неизвестный тип записи в файле: " + tokens[0]);
+            }
+        }
+
+        if (in.bad()) {
+            throw FileReadException("Ошибка ввода-вывода при чтении файла состояния.");
+        }
+        if (!endReached) {
+            throw InvalidDataException("Отсутствует завершающая метка END.");
+        }
+        if (actualRecords != expectedRecords) {
+            throw InvalidDataException("Количество записей в файле не соответствует указанному в заголовке.");
+        }
+
+        return hasDuplicates;
+    }
 }
 
 bool FileStorage::exists(std::string_view path) {

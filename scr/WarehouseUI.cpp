@@ -11,6 +11,11 @@
 #include "FileStorage.h"
 #include "Logger.h"
 #include "ReportWriter.h"
+namespace {
+    const std::string STATE_FILE_PATH = "data/warehouse_state.txt";
+    const std::string LOG_FILE_PATH = "data/warehouse.log";
+    const std::string REPORT_FILE_PATH = "data/report.txt";
+}
 
 void printMenu() {
     std::cout << "\n======================================================\n"
@@ -89,7 +94,7 @@ void handlePlacement(Warehouse& warehouse, const Collection<std::shared_ptr<Prod
     auto* targetZone = warehouse.getZone(zChoice - 1);
     if (targetZone != nullptr) {
         *targetZone += selectedProduct;
-        Logger::append("data/warehouse.log", "Приемка груза " + selectedProduct.getSku() + " в зону " + targetZone->getName());
+        Logger::append(LOG_FILE_PATH, "Приемка груза " + selectedProduct.getSku() + " в зону " + targetZone->getName());
     }
 }
 
@@ -105,7 +110,7 @@ void handleIssue(Warehouse& warehouse) {
             int beforeCount = zone->getProductCount();
             *zone -= sku;
             if (zone->getProductCount() < beforeCount) {
-                Logger::append("data/warehouse.log", "Отгрузка груза " + sku + " из зоны " + zone->getName());
+                Logger::append(LOG_FILE_PATH, "Отгрузка груза " + sku + " из зоны " + zone->getName());
                 found = true;
                 break;
             }
@@ -193,7 +198,7 @@ void handleRegisterProduct(Collection<std::shared_ptr<Product>>& catalog,
         catalog.add(std::make_shared<StandardProduct>(prod));
         std::cout << "\n[УСПЕХ] Зарегистрирован: " << prod.getProductType() << "\n";
     }
-    Logger::append("data/warehouse.log", "Зарегистрирован новый груз в номенклатуре: " + sku + " (" + name + ")");
+    Logger::append(LOG_FILE_PATH, "Зарегистрирован новый груз в номенклатуре: " + sku + " (" + name + ")");
 }
 
 void compareTwoProducts(const Product& p1, const Product& p2) {
@@ -562,11 +567,11 @@ void handleExceptionsMenu(Warehouse& warehouse, const Collection<std::shared_ptr
             }
             catch (const RelationException& ex) {
                 std::cout << ex.what() << "\n";
-                Logger::append("data/warehouse.log", std::string("ОШИБКА: ") + ex.what());
+                Logger::append(LOG_FILE_PATH, std::string("ОШИБКА: ") + ex.what());
             }
             catch (const WarehouseException& ex) {
                 std::cout << ex.what() << "\n";
-                Logger::append("data/warehouse.log", std::string("ОШИБКА: ") + ex.what());
+                Logger::append(LOG_FILE_PATH, std::string("ОШИБКА: ") + ex.what());
             }
             break;
         }
@@ -580,48 +585,44 @@ void handleExceptionsMenu(Warehouse& warehouse, const Collection<std::shared_ptr
 }
 void handleSaveState(const Warehouse& warehouse) {
     try {
-        const std::string path = "data/warehouse_state.txt";
-        FileStorage::save(path, warehouse);
-        Logger::append("data/warehouse.log", "Состояние склада сохранено в файл: " + path);
-        std::cout << "Состояние склада успешно сохранено в файл \"" << path << "\".\n";
+        FileStorage::save(STATE_FILE_PATH, warehouse);
+        Logger::append(LOG_FILE_PATH, "Состояние склада сохранено в файл: " + STATE_FILE_PATH);
+        std::cout << "Состояние склада успешно сохранено в файл \"" << STATE_FILE_PATH << "\".\n";
     }
     catch (const std::exception& e) {
-        Logger::append("data/warehouse.log", std::string("ОШИБКА сохранения состояния: ") + e.what());
+        Logger::append(LOG_FILE_PATH, std::string("ОШИБКА сохранения состояния: ") + e.what());
         std::cerr << "Ошибка сохранения состояния: " << e.what() << "\n";
     }
 }
 
 void handleLoadState(Warehouse& warehouse) {
     try {
-        const std::string path = "data/warehouse_state.txt";
-        FileStorage::loadAndMerge(path, warehouse);
-        Logger::append("data/warehouse.log", "Выполнена загрузка и слияние данных из файла: " + path);
-        std::cout << "Данные из файла \"" << path << "\" успешно загружены и объединены с текущим складом.\n";
+        FileStorage::loadAndMerge(STATE_FILE_PATH, warehouse);
+        Logger::append(LOG_FILE_PATH, "Выполнена загрузка и слияние данных из файла: " + STATE_FILE_PATH);
+        std::cout << "Данные из файла \"" << STATE_FILE_PATH << "\" успешно загружены и объединены с текущим складом.\n";
     }
     catch (const std::exception& e) {
-        Logger::append("data/warehouse.log", std::string("ОШИБКА загрузки состояния: ") + e.what());
+        Logger::append(LOG_FILE_PATH, std::string("ОШИБКА загрузки состояния: ") + e.what());
         std::cerr << "Ошибка загрузки состояния: " << e.what() << "\n";
-    }
+    }   
 }
 
 void handleGenerateReport(const Warehouse& warehouse) {
     try {
-        const std::string path = "data/report.txt";
-        ReportWriter::write(path, warehouse);
-        Logger::append("data/warehouse.log", "Сформирован текстовый отчет: " + path);
-        std::cout << "Текстовый отчет успешно сформирован: \"" << path << "\".\n";
+        ReportWriter::write(REPORT_FILE_PATH, warehouse);
+        Logger::append(LOG_FILE_PATH, "Сформирован текстовый отчет: " + REPORT_FILE_PATH);
+        std::cout << "Текстовый отчет успешно сформирован: \"" << REPORT_FILE_PATH << "\".\n";
     }
     catch (const std::exception& e) {
-        Logger::append("data/warehouse.log", std::string("ОШИБКА формирования отчета: ") + e.what());
+        Logger::append(LOG_FILE_PATH, std::string("ОШИБКА формирования отчета: ") + e.what());
         std::cerr << "Ошибка формирования отчета: " << e.what() << "\n";
     }
 }
 
 void handleShowJournal() {
     try {
-        const std::string path = "data/warehouse.log";
-        const std::string content = Logger::readAll(path);
-        std::cout << "\n=== ЖУРНАЛ ОПЕРАЦИЙ (" << path << ") ===\n";
+        const std::string content = Logger::readAll(LOG_FILE_PATH);
+        std::cout << "\n=== ЖУРНАЛ ОПЕРАЦИЙ (" << LOG_FILE_PATH << ") ===\n";
         if (content.empty()) {
             std::cout << "Журнал пуст.\n";
         }
