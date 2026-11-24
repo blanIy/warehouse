@@ -229,9 +229,17 @@ void FileStorage::writeAtomic(std::string_view path, std::string_view content) {
 }
 
 void FileStorage::save(std::string_view path, const Warehouse& warehouse) {
+    int totalRecords = warehouse.getZoneCount();
+    for (int i = 0; i < warehouse.getZoneCount(); ++i) {
+        const auto* zone = warehouse.getZone(i);
+        if (zone != nullptr) {
+            totalRecords += zone->getProductCount();
+        }
+    }
+
     std::ostringstream buf;
     buf.imbue(std::locale::classic());
-    buf << MAGIC_HEADER << ";" << FORMAT_VERSION << "\n";
+    buf << MAGIC_HEADER << ";" << totalRecords << "\n";
 
     for (int i = 0; i < warehouse.getZoneCount(); ++i) {
         const auto* zone = warehouse.getZone(i);
@@ -274,9 +282,11 @@ void FileStorage::loadAndMerge(std::string_view path, Warehouse& warehouse) {
     if (headerTokens.size() != 2 || headerTokens[0] != MAGIC_HEADER) {
         throw InvalidDataException("Некорректный заголовок файла состояния.");
     }
-    if (parseInt(headerTokens[1], "версия формата") != FORMAT_VERSION) {
-        throw InvalidDataException("Неподдерживаемая версия формата файла.");
+    const int expectedRecords = parseInt(headerTokens[1], "количество записей");
+    if (expectedRecords < 0) {
+        throw InvalidDataException("Количество записей не может быть отрицательным.");
     }
+    int actualRecords = 0;
 
     bool endReached = false;
     std::set<std::string> fileSkus;
@@ -303,6 +313,7 @@ void FileStorage::loadAndMerge(std::string_view path, Warehouse& warehouse) {
             if (findZoneIndex(warehouse, zoneName) == -1) {
                 warehouse.addZone(StorageZone(zoneName, maxW, maxV));
             }
+            ++actualRecords;
         }
         else if (tokens[0] == "PRODUCT") {
             const auto product = buildProduct(tokens);
@@ -318,6 +329,7 @@ void FileStorage::loadAndMerge(std::string_view path, Warehouse& warehouse) {
             if (!hasProductSku(warehouse, product->getSku())) {
                 warehouse.placeProduct(zoneIdx, *product);
             }
+            ++actualRecords;
         }
         else {
             throw InvalidDataException("Неизвестный тип записи в файле: " + tokens[0]);
@@ -329,6 +341,9 @@ void FileStorage::loadAndMerge(std::string_view path, Warehouse& warehouse) {
     }
     if (!endReached) {
         throw InvalidDataException("Отсутствует завершающая метка END.");
+    }
+    if (actualRecords != expectedRecords) {
+        throw InvalidDataException("Количество записей в файле не соответствует указанному в заголовке.");
     }
     in.close();
     if (hasDuplicates) {
