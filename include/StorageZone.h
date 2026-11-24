@@ -19,8 +19,6 @@ public:
     StorageZone(std::string_view name, double maxWeight, double maxVolume);
     StorageZone(const StorageZone& other);
     StorageZone& operator=(const StorageZone& other);
-    StorageZone(StorageZone&&) noexcept = default;
-    StorageZone& operator=(StorageZone&&) noexcept = default;
     ~StorageZone();
 
     std::string getName() const;

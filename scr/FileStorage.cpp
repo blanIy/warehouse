@@ -20,7 +20,6 @@
 namespace {
 
     const char* const MAGIC_HEADER = "WMSSTATE";
-    const int FORMAT_VERSION = 1;
 
     std::vector<std::string> splitLine(const std::string& line, char delimiter) {
         std::vector<std::string> tokens;

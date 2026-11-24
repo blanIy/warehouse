@@ -7,14 +7,16 @@
 #include <fstream>
 #include <iomanip>
 #include <sstream>
+#include <chrono>
 
 std::string Logger::timestamp() {
-    const std::time_t now = std::time(nullptr);
+    const auto now = std::chrono::system_clock::now();
+    const std::time_t nowTime = std::chrono::system_clock::to_time_t(now);
     std::tm local{};
 #ifdef _WIN32
-    localtime_s(&local, &now);
+    localtime_s(&local, &nowTime);
 #else
-    localtime_r(&now, &local);
+    localtime_r(&nowTime, &local);
 #endif
     std::ostringstream os;
     os << std::put_time(&local, "%Y-%m-%d %H:%M:%S");
